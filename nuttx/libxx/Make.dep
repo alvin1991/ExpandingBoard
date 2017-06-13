@@ -1,0 +1,104 @@
+libxx_cxapurevirtual.o: libxx_cxapurevirtual.cxx \
+ /home/alvin/Desktop/FC/ExpandingBoard/nuttx/include/cxx/cassert \
+ /home/alvin/Desktop/FC/ExpandingBoard/nuttx/include/assert.h \
+ /home/alvin/Desktop/FC/ExpandingBoard/nuttx/include/nuttx/compiler.h \
+ /home/alvin/Desktop/FC/ExpandingBoard/nuttx/include/nuttx/config.h \
+ /home/alvin/Desktop/FC/ExpandingBoard/nuttx/include/stdint.h \
+ /home/alvin/Desktop/FC/ExpandingBoard/nuttx/include/arch/types.h \
+ /home/alvin/Desktop/FC/ExpandingBoard/nuttx/include/limits.h \
+ /home/alvin/Desktop/FC/ExpandingBoard/nuttx/include/arch/limits.h
+libxx_eabi_atexit.o: libxx_eabi_atexit.cxx \
+ /home/alvin/Desktop/FC/ExpandingBoard/nuttx/include/nuttx/config.h \
+ /home/alvin/Desktop/FC/ExpandingBoard/nuttx/include/cxx/cstdlib \
+ /home/alvin/Desktop/FC/ExpandingBoard/nuttx/include/stdlib.h \
+ /home/alvin/Desktop/FC/ExpandingBoard/nuttx/include/nuttx/compiler.h \
+ /home/alvin/Desktop/FC/ExpandingBoard/nuttx/include/sys/types.h \
+ /home/alvin/Desktop/FC/ExpandingBoard/nuttx/include/stdint.h \
+ /home/alvin/Desktop/FC/ExpandingBoard/nuttx/include/arch/types.h \
+ /home/alvin/Desktop/FC/ExpandingBoard/nuttx/include/limits.h \
+ /home/alvin/Desktop/FC/ExpandingBoard/nuttx/include/arch/limits.h \
+ libxx.hxx
+libxx_cxa_atexit.o: libxx_cxa_atexit.cxx \
+ /home/alvin/Desktop/FC/ExpandingBoard/nuttx/include/nuttx/config.h \
+ /home/alvin/Desktop/FC/ExpandingBoard/nuttx/include/cxx/cassert \
+ /home/alvin/Desktop/FC/ExpandingBoard/nuttx/include/assert.h \
+ /home/alvin/Desktop/FC/ExpandingBoard/nuttx/include/nuttx/compiler.h \
+ /home/alvin/Desktop/FC/ExpandingBoard/nuttx/include/stdint.h \
+ /home/alvin/Desktop/FC/ExpandingBoard/nuttx/include/arch/types.h \
+ /home/alvin/Desktop/FC/ExpandingBoard/nuttx/include/limits.h \
+ /home/alvin/Desktop/FC/ExpandingBoard/nuttx/include/arch/limits.h \
+ libxx.hxx \
+ /home/alvin/Desktop/FC/ExpandingBoard/nuttx/include/cxx/cstdlib \
+ /home/alvin/Desktop/FC/ExpandingBoard/nuttx/include/stdlib.h \
+ /home/alvin/Desktop/FC/ExpandingBoard/nuttx/include/sys/types.h
+libxx_delete.o: libxx_delete.cxx \
+ /home/alvin/Desktop/FC/ExpandingBoard/nuttx/include/nuttx/config.h \
+ libxx.hxx \
+ /home/alvin/Desktop/FC/ExpandingBoard/nuttx/include/cxx/cstdlib \
+ /home/alvin/Desktop/FC/ExpandingBoard/nuttx/include/stdlib.h \
+ /home/alvin/Desktop/FC/ExpandingBoard/nuttx/include/nuttx/compiler.h \
+ /home/alvin/Desktop/FC/ExpandingBoard/nuttx/include/sys/types.h \
+ /home/alvin/Desktop/FC/ExpandingBoard/nuttx/include/stdint.h \
+ /home/alvin/Desktop/FC/ExpandingBoard/nuttx/include/arch/types.h \
+ /home/alvin/Desktop/FC/ExpandingBoard/nuttx/include/limits.h \
+ /home/alvin/Desktop/FC/ExpandingBoard/nuttx/include/arch/limits.h
+libxx_deletea.o: libxx_deletea.cxx \
+ /home/alvin/Desktop/FC/ExpandingBoard/nuttx/include/nuttx/config.h \
+ libxx.hxx \
+ /home/alvin/Desktop/FC/ExpandingBoard/nuttx/include/cxx/cstdlib \
+ /home/alvin/Desktop/FC/ExpandingBoard/nuttx/include/stdlib.h \
+ /home/alvin/Desktop/FC/ExpandingBoard/nuttx/include/nuttx/compiler.h \
+ /home/alvin/Desktop/FC/ExpandingBoard/nuttx/include/sys/types.h \
+ /home/alvin/Desktop/FC/ExpandingBoard/nuttx/include/stdint.h \
+ /home/alvin/Desktop/FC/ExpandingBoard/nuttx/include/arch/types.h \
+ /home/alvin/Desktop/FC/ExpandingBoard/nuttx/include/limits.h \
+ /home/alvin/Desktop/FC/ExpandingBoard/nuttx/include/arch/limits.h
+libxx_new.o: libxx_new.cxx \
+ /home/alvin/Desktop/FC/ExpandingBoard/nuttx/include/nuttx/config.h \
+ /home/alvin/Desktop/FC/ExpandingBoard/nuttx/include/cxx/cstddef \
+ /home/alvin/Desktop/FC/ExpandingBoard/nuttx/include/nuttx/compiler.h \
+ /home/alvin/Desktop/FC/ExpandingBoard/nuttx/include/stddef.h \
+ /home/alvin/Desktop/FC/ExpandingBoard/nuttx/include/sys/types.h \
+ /home/alvin/Desktop/FC/ExpandingBoard/nuttx/include/stdint.h \
+ /home/alvin/Desktop/FC/ExpandingBoard/nuttx/include/arch/types.h \
+ /home/alvin/Desktop/FC/ExpandingBoard/nuttx/include/limits.h \
+ /home/alvin/Desktop/FC/ExpandingBoard/nuttx/include/arch/limits.h \
+ /home/alvin/Desktop/FC/ExpandingBoard/nuttx/include/debug.h \
+ /home/alvin/Desktop/FC/ExpandingBoard/nuttx/include/syslog.h \
+ /opt/gcc-arm-none-eabi-4_9-2015q3/lib/gcc/arm-none-eabi/4.9.3/include/stdarg.h \
+ /home/alvin/Desktop/FC/ExpandingBoard/nuttx/include/stdbool.h libxx.hxx \
+ /home/alvin/Desktop/FC/ExpandingBoard/nuttx/include/cxx/cstdlib \
+ /home/alvin/Desktop/FC/ExpandingBoard/nuttx/include/stdlib.h
+libxx_newa.o: libxx_newa.cxx \
+ /home/alvin/Desktop/FC/ExpandingBoard/nuttx/include/nuttx/config.h \
+ /home/alvin/Desktop/FC/ExpandingBoard/nuttx/include/cxx/cstddef \
+ /home/alvin/Desktop/FC/ExpandingBoard/nuttx/include/nuttx/compiler.h \
+ /home/alvin/Desktop/FC/ExpandingBoard/nuttx/include/stddef.h \
+ /home/alvin/Desktop/FC/ExpandingBoard/nuttx/include/sys/types.h \
+ /home/alvin/Desktop/FC/ExpandingBoard/nuttx/include/stdint.h \
+ /home/alvin/Desktop/FC/ExpandingBoard/nuttx/include/arch/types.h \
+ /home/alvin/Desktop/FC/ExpandingBoard/nuttx/include/limits.h \
+ /home/alvin/Desktop/FC/ExpandingBoard/nuttx/include/arch/limits.h \
+ /home/alvin/Desktop/FC/ExpandingBoard/nuttx/include/debug.h \
+ /home/alvin/Desktop/FC/ExpandingBoard/nuttx/include/syslog.h \
+ /opt/gcc-arm-none-eabi-4_9-2015q3/lib/gcc/arm-none-eabi/4.9.3/include/stdarg.h \
+ /home/alvin/Desktop/FC/ExpandingBoard/nuttx/include/stdbool.h libxx.hxx \
+ /home/alvin/Desktop/FC/ExpandingBoard/nuttx/include/cxx/cstdlib \
+ /home/alvin/Desktop/FC/ExpandingBoard/nuttx/include/stdlib.h
+libxx_stdthrow.o: libxx_stdthrow.cxx \
+ /home/alvin/Desktop/FC/ExpandingBoard/nuttx/include/cxx/cstdlib \
+ /home/alvin/Desktop/FC/ExpandingBoard/nuttx/include/nuttx/config.h \
+ /home/alvin/Desktop/FC/ExpandingBoard/nuttx/include/stdlib.h \
+ /home/alvin/Desktop/FC/ExpandingBoard/nuttx/include/nuttx/compiler.h \
+ /home/alvin/Desktop/FC/ExpandingBoard/nuttx/include/sys/types.h \
+ /home/alvin/Desktop/FC/ExpandingBoard/nuttx/include/stdint.h \
+ /home/alvin/Desktop/FC/ExpandingBoard/nuttx/include/arch/types.h \
+ /home/alvin/Desktop/FC/ExpandingBoard/nuttx/include/limits.h \
+ /home/alvin/Desktop/FC/ExpandingBoard/nuttx/include/arch/limits.h \
+ /home/alvin/Desktop/FC/ExpandingBoard/nuttx/include/debug.h \
+ /home/alvin/Desktop/FC/ExpandingBoard/nuttx/include/syslog.h \
+ /opt/gcc-arm-none-eabi-4_9-2015q3/lib/gcc/arm-none-eabi/4.9.3/include/stdarg.h \
+ /home/alvin/Desktop/FC/ExpandingBoard/nuttx/include/stdbool.h
+libxx_cxa_guard.o: libxx_cxa_guard.cxx \
+ /home/alvin/Desktop/FC/ExpandingBoard/nuttx/include/nuttx/compiler.h \
+ /home/alvin/Desktop/FC/ExpandingBoard/nuttx/include/nuttx/config.h

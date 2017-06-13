@@ -184,6 +184,11 @@ void board_initialize(void)
   board_lcd_initialize();
 #endif
 
+#ifdef HAVE_SERIALDRIVER
+  /* Initialize the SerialPort early */
+  up_serialinit();
+#endif
+
 #if defined(CONFIG_NSH_LIBRARY) && !defined(CONFIG_LIB_BOARDCTL)
   /* Perform NSH initialization here instead of from the NSH.  This
    * alternative NSH initialization is necessary when NSH is ran in user-space
