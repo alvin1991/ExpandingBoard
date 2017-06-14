@@ -48,7 +48,6 @@
 #include <fcntl.h>
 #include <errno.h>
 
-
 //nuttx
 #include <nuttx/config.h>
 #include <nuttx/sched.h>
@@ -57,34 +56,75 @@
 
 //mavlink
 #include "mavlink/minimal/mavlink.h"
+
 /****************************************************************************
- * Public Functions
+ * Public Parameters
  ****************************************************************************/
 typedef struct CommBridge
 {
-	int					_class_instance;
-	bool			    _sensor_ok;
-	int					_measure_ticks;
+	bool				_class_instance;
+	bool			    _should_exit;
 	int					_cycling_rate;
+	int					_pid;
+	int					_fd;
+	int (*start)(char *[]);
+	int (*cycle)(void);
 }CommBridge_t;
 
-int
-init(void)
-{
-	//1订阅相关传感器的数据
+static CommBridge_t	*g_dev;
 
-	//2初始化通信桥串口驱动
 
-	//3测试通信桥工作正常
-
-	//4.创建task或者加入workqueue
-	return OK;
-}
+/****************************************************************************
+ * Public Functions
+ ****************************************************************************/
 
 void
 cycle(void)
 {
-	//1.重新加入一次workqueue
+
+	int fd,byte_send,len;
+
+	/*
+	 * Mavlink Package
+	 */
+	mavlink_message_t  msgpacket;
+	memset(&msgpacket,0,sizeof(msgpacket));
+
+	/*
+	 * Mavlink heartbeat
+	 */
+	mavlink_heartbeat_t packet_in ={
+	0,
+	MAV_TYPE_GROUND_ROVER,
+	MAV_AUTOPILOT_PIXHAWK,
+	MAV_MODE_FLAG_DECODE_POSITION_STABILIZE,
+	MAV_STATE_ACTIVE,
+	2};
+	mavlink_heartbeat_t heartbeat;
+	memset(&heartbeat,0,sizeof(heartbeat));
+	heartbeat.custom_mode = packet_in.custom_mode;
+	heartbeat.type = packet_in.type;
+	heartbeat.autopilot = packet_in.autopilot;
+	heartbeat.base_mode = packet_in.base_mode;
+	heartbeat.system_status = packet_in.system_status;
+	heartbeat.mavlink_version = packet_in.mavlink_version;
+
+
+	while(!g_dev->_should_exit){
+
+		/*Send Heartbeat */
+		len = mavlink_msg_heartbeat_encode(0x01,
+				0x02,
+				&msgpacket,
+				&heartbeat);
+		byte_send = write(g_dev->_fd,&msgpacket,len);
+		if(byte_send > 0)
+		{
+			printf("write:%d\n",byte_send);
+			byte_send = 0;
+			usleep(2000000);
+		}
+	}
 
 }
 
@@ -97,79 +137,51 @@ cycle(void)
 #endif
 const int ERROR = -1;
 
-CommBridge_t	*g_dev;
 
 /**
  * Start the driver.
  */
 int
-start(void)
+start(char *argv[])
 {
-	int fd,val;
+	/* creat commbrdge task */
+	g_dev->_pid = task_create( "commbridge",\
+			CONFIG_EXAMPLES_COMMBRIDGE_PRIORITY,\
+			CONFIG_EXAMPLES_COMMBRIDGE_STACKSIZE,\
+			g_dev->cycle, argv);
 
-	/*
-	 *打开串口ttyS1作为通信桥接口
-	 */
-	fd = open("/dev/ttyS1", O_RDWR);
-	if (fd < 0){
-		printf(stderr, "ERROR: open failed: %d.\n", errno);
-		return EXIT_FAILURE;
+	if(g_dev->_pid < 0){
+		int errcode = errno;
+		fprintf(stderr, "ERROR: Failed to start commbridge: %d\n",\
+				errcode);
+		return -errcode;
 	}
-
-	for(;;){
-		val = write(fd,"This is CommBridge.\n",20);
-
-		if(val > 0)
-		{
-			printf("write:%d\n",val);
-			val = 0;
-			usleep(1000000);
-		}
-	}
-	return EXIT_SUCCESS;
+	return OK;
+}
 
 
-	mavlink_heartbeat_t packet_in ={
-	963497464,17,84,151,218,3
-	};
-	mavlink_heartbeat_t packet1;
-	memset(&packet1,0,sizeof(packet1));
-	packet1.custom_mode = packet_in.custom_mode;
-	packet1.type = packet_in.type;
-	packet1.autopilot = packet_in.autopilot;
-	packet1.base_mode = packet_in.base_mode;
-	packet1.system_status = packet_in.system_status;
-	packet1.mavlink_version = packet_in.mavlink_version;
-
-//	mavlink_msg_heartbeat_send(MAVLINK_COMM_1 ,
-//			packet1.type ,
-//			packet1.autopilot ,
-//			packet1.base_mode ,
-//			packet1.custom_mode ,
-//			packet1.system_status );
 
 
-	/* only exsit a CommBridge  */
-	if (g_dev != NULL) {
-		printf("already started.\n");
-		exit(1);
-	}
+/****************************************************************************
+ * CommBridge_main
+ ****************************************************************************/
 
-	/* create the driver */
-	if (g_dev == NULL) {
-		printf("device implement error.\n");
-		goto fail;
-	}
-	printf("CommBridge Start.\n");
-	exit(0);
-
-	fail:
-		printf("driver start failed.\n");
-		exit(1);
+/**
+ * init the device.
+ */
+int
+init(void)
+{
+	/* initialize device */
+	g_dev->_cycling_rate = 100;
+	g_dev->_should_exit = false;
+	g_dev->cycle = cycle;
+	g_dev->start = start;
+	return OK;
 }
 
 /**
- * Stop the driver.
+ * Stop the device.
  */
 int
 stop(void)
@@ -177,71 +189,71 @@ stop(void)
 	exit(0);
 }
 
-
-/****************************************************************************
- * CommBridge_main
- ****************************************************************************/
-//#ifdef CONFIG_BUILD_KERNEL
-//int main(int argc, FAR char *argv[])
-//#else
-//int commbridge_main(int argc, char *argv[])
-//#endif
-//{
-//	if(argc >= 2){
-//		/*
-//		 * Start/load the driver.
-//		 */
-//		if (!strcmp(argv[1], "start")) {
-//			start();
-//			return OK;
-//		}
-//		/*
-//		 * Stop the driver.
-//		 */
-//		if (!strcmp(argv[1], "stop")) {
-//			stop();
-//			return OK;
-//		}
-//		printf("unrecognized command, try 'start', 'test', 'reset' or 'info'.\n");
-//		exit(1);
-//	}
-//
-//	printf( "unrecognized format, try 'start', 'test', 'reset' or 'info'.\n");
-//	exit(1);
-//	return ERROR;
-//}
-
-int commbridge_main(int argc, char *argv[]){
-	int ble_write_pid, ble_pid;
-	int i, ret;
-	int fd;
-	//打印初始线程信息
-	for (i = 0; i <= argc; ++i){
-		printf("[BLE]:argv[%d] = %s\n",i, argv[i]);
-	}
-	//传入参数非法
+#ifdef CONFIG_BUILD_KERNEL
+int main(int argc, FAR char *argv[])
+#else
+int commbridge_main(int argc, char *argv[])
+#endif
+{
+	/* invalid ParamSet */
 	if (*argv[1] != '-'){
 	  printf("Invalid options format: %s\n", argv[1]);
-	  exit(EXIT_SUCCESS);
+	  exit(EXIT_FAILURE);
 	}
 
-	//启动读写线程
+	/* start commbridge */
 	if('s' == *(++argv[1])){
-		//创建蓝牙read线程
-		ble_pid = task_create( "ble",\
-								100,\
-								512,\
-								start, argv);
-		if(ble_pid < 0){
-			int errcode = errno;
-			fprintf(stderr, "ERROR: Failed to ble: %d\n",\
-					errcode);
-			return -errcode;
+		/* only exist a device  */
+		if (g_dev != NULL) {
+			printf("device already started.\n");
+			exit(EXIT_FAILURE);
 		}
-		printf("[BLE]:task pid:%d\n",ble_pid);
+
+		/* create the device */
+		g_dev =  (CommBridge_t *)malloc(sizeof(CommBridge_t));
+
+		if (g_dev == NULL) {
+			printf("device implement error.\n");
+			goto fail;
+		}
+
+		/* initialize the device */
+		if (OK != init()) {
+			goto fail;
+			printf("device initialize error.\n");
+			exit(EXIT_FAILURE);
+		}
+
+		/* open serial port for the device */
+		g_dev->_fd = open("/dev/ttyS1", O_RDWR);
+		if (g_dev->_fd < 0){
+			printf(stderr, "ERROR: open failed: %d.\n", errno);
+			goto fail;
+		}
+
+		/* start the device */
+		if (g_dev->start(argv) < 0){
+			printf(stderr, "ERROR: start failed: %d.\n", errno);
+			goto fail;
+		}
+
 	}
-	printf("[BLE]:main task exit.\n");
-	//初始线程退出
+
+	/* stop commbridge */
+	if('c' == *(++argv[1])){
+		//....
+	}
+
 	exit(EXIT_SUCCESS);
-	return EXIT_SUCCESS;
+	return OK;
+
+	fail:
+		if (g_dev != NULL) {
+			free(g_dev);
+			g_dev = NULL;
+		}
+		printf("device start failed");
+        return ERROR;
+
 }
+
