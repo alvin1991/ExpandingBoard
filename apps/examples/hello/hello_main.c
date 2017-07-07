@@ -36,17 +36,55 @@
 /****************************************************************************
  * Included Files
  ****************************************************************************/
-
-#include <nuttx/config.h>
+//GNU
 #include <stdio.h>
-
+#include <string.h>
+#include <errno.h>
+#include <stdlib.h>
+//Nuttx
+#include <nuttx/config.h>
+#include <nuttx/wqueue.h>
+#include <sys/time.h>
+#include <time.h>
 /****************************************************************************
  * Public Functions
  ****************************************************************************/
+struct work_s				_work;
+
 
 /****************************************************************************
  * hello_main
  ****************************************************************************/
+
+void worker_cycle_a()
+{
+	static  int cnt = 0;
+	struct timespec timer;
+	int ret = -1;
+
+	/* perform cycle */
+	ret = clock_gettime(CLOCK_MONOTONIC, &timer);
+	if(ret != 0){
+			printf("ERROR: %s\n", strerror(ret));
+			exit(EXIT_FAILURE);
+	}
+
+	printf("[A]:%d %d %ld\n",cnt++,timer.tv_sec,timer.tv_nsec);
+
+	/* schedule a cycle call */
+	ret = work_queue(HPWORK, &_work, (worker_t)&worker_cycle_a, 0, 100);
+}
+
+void worker_cycle_b()
+{
+	static  int cnt = 0;
+	int ret = -1;
+	/* perform cycle */
+	printf("[A]: %d\n",cnt++);
+
+	/* schedule a cycle call */
+	ret = work_queue(HPWORK, &_work, (worker_t)&worker_cycle_b, 0, 100);
+}
 
 #ifdef CONFIG_BUILD_KERNEL
 int main(int argc, FAR char *argv[])
@@ -54,6 +92,18 @@ int main(int argc, FAR char *argv[])
 int hello_main(int argc, char *argv[])
 #endif
 {
-  printf("Hello, World!!\n");
-  return 0;
+
+	int ret = -1;
+
+	memset(&_work, 0, sizeof(_work));
+
+	/* schedule a cycle call */
+	ret = work_queue(HPWORK, &_work, (worker_t)&worker_cycle_a, 0, 1);
+	if(ret != 0)
+	{
+		printf("%s: ERROR: %s\n", argv[0], strerror(ret));
+		exit(EXIT_FAILURE);
+	}
+	printf("Hello, World!!\n");
+	return 0;
 }

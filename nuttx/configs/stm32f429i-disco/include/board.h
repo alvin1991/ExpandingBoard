@@ -212,27 +212,27 @@
  * brought out to PA2 (TX) and PA3 (RX) for connection to an external serial device.
  * (See the README.txt file for other options)
  */
-//UART1 Rx:PA10  Tx:PA9
+//UART1(ttyS0) Rx:PA10  Tx:PA9 	-->console
 #define GPIO_USART1_RX GPIO_USART1_RX_1
 #define GPIO_USART1_TX GPIO_USART1_TX_1
 
-//UART2 Rx:PD6  Tx:PD5
+//UART2(ttyS1) Rx:PD6  Tx:PD5		-->commbrage
 #define GPIO_USART2_RX GPIO_USART2_RX_2
 #define GPIO_USART2_TX GPIO_USART2_TX_2
 
-//UART3 Rx:PB11 Tx:PB10
+//UART3(ttyS2) Rx:PB11 Tx:PB10		-->magfinder front
 #define GPIO_USART3_RX GPIO_USART3_RX_1
 #define GPIO_USART3_TX GPIO_USART3_TX_1
 
-//UART4 Rx:PA1  Tx:PA0
-#define GPIO_UART4_RX GPIO_UART4_RX_1
-#define GPIO_UART4_TX GPIO_UART4_TX_1
+//UART4(ttyS3) Rx:PA1  Tx:PA0		-->magfinder back
+#define GPIO_UART4_RX GPIO_UART4_RX_2
+#define GPIO_UART4_TX GPIO_UART4_TX_2
 
-//UART5 Rx:PD2  Tx:PC12
+//UART5(ttyS4) Rx:PD2  Tx:PC12		-->RFID
 #define GPIO_UART5_RX GPIO_UART5_RX
 #define GPIO_UART5_TX GPIO_UART5_TX
 
-//UART6 Rx:PC7  Tx:PC6
+//UART6(ttyS5) Rx:PC7  Tx:PC6
 #define GPIO_USART6_RX GPIO_USART6_RX_1
 #define GPIO_USART6_TX GPIO_USART6_TX_1
 

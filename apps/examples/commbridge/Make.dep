@@ -49,6 +49,10 @@ commbridge_main.o: commbridge_main.c \
  /home/alvin/Desktop/FC/ExpandingBoard/nuttx/include/errno.h \
  /home/alvin/Desktop/FC/ExpandingBoard/nuttx/include/nuttx/arch.h \
  /home/alvin/Desktop/FC/ExpandingBoard/nuttx/include/nuttx/wqueue.h \
+ /home/alvin/Desktop/FC/ExpandingBoard/nuttx/include/nuttx/sensors/ccfd16_serial.h \
+ /home/alvin/Desktop/FC/ExpandingBoard/nuttx/include/nuttx/sensors/ioctl.h \
+ /home/alvin/Desktop/FC/ExpandingBoard/nuttx/include/nuttx/fs/ioctl.h \
+ /home/alvin/Desktop/FC/ExpandingBoard/nuttx/include/nuttx/serial/tioctl.h \
  mavlink/minimal/mavlink.h mavlink/minimal/version.h \
  mavlink/minimal/minimal.h mavlink/minimal/../protocol.h \
  mavlink/minimal/../mavlink_types.h mavlink/minimal/../mavlink_helpers.h \

@@ -3,7 +3,7 @@
 # see the file kconfig-language.txt in the NuttX tools repository.
 #
 
-config CCF_D16
+config CCFD16
 	bool "CCF-D16 Magnetic Finder Encoder support"
 	default n
 	---help---

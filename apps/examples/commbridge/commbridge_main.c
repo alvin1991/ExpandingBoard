@@ -53,6 +53,7 @@
 #include <nuttx/sched.h>
 #include <nuttx/arch.h>
 #include <nuttx/wqueue.h>
+#include <nuttx/sensors/ccfd16_serial.h>
 
 //mavlink
 #include "mavlink/minimal/mavlink.h"
@@ -78,7 +79,7 @@ static CommBridge_t	*g_dev;
  * Public Functions
  ****************************************************************************/
 
-void
+static void
 cycle(void)
 {
 
@@ -141,7 +142,7 @@ const int ERROR = -1;
 /**
  * Start the driver.
  */
-int
+static int
 start(char *argv[])
 {
 	/* creat commbrdge task */
@@ -189,71 +190,125 @@ stop(void)
 	exit(0);
 }
 
+//#ifdef CONFIG_BUILD_KERNEL
+//int main(int argc, FAR char *argv[])
+//#else
+//int commbridge_main(int argc, char *argv[])
+//#endif
+//{
+//	/* invalid ParamSet */
+//	if (*argv[1] != '-'){
+//	  printf("Invalid options format: %s\n", argv[1]);
+//	  exit(EXIT_FAILURE);
+//	}
+//
+//	/* start commbridge */
+//	if('s' == *(++argv[1])){
+//		/* only exist a device  */
+//		if (g_dev != NULL) {
+//			printf("device already started.\n");
+//			exit(EXIT_FAILURE);
+//		}
+//
+//		/* create the device */
+//		g_dev =  (CommBridge_t *)malloc(sizeof(CommBridge_t));
+//
+//		if (g_dev == NULL) {
+//			printf("device implement error.\n");
+//			goto fail;
+//		}
+//
+//		/* initialize the device */
+//		if (OK != init()) {
+//			goto fail;
+//			printf("device initialize error.\n");
+//			exit(EXIT_FAILURE);
+//		}
+//
+//		/* open serial port for the device */
+//		g_dev->_fd = open("/dev/ttyS1", O_RDWR);
+//		if (g_dev->_fd < 0){
+//			printf(stderr, "ERROR: open failed: %d.\n", errno);
+//			goto fail;
+//		}
+//
+//		/* start the device */
+//		if (g_dev->start(argv) < 0){
+//			printf(stderr, "ERROR: start failed: %d.\n", errno);
+//			goto fail;
+//		}
+//
+//	}
+//
+//	/* stop commbridge */
+//	if('c' == *(++argv[1])){
+//		//....
+//	}
+//
+//	exit(EXIT_SUCCESS);
+//	return OK;
+//
+//	fail:
+//		if (g_dev != NULL) {
+//			free(g_dev);
+//			g_dev = NULL;
+//		}
+//		printf("device start failed");
+//        return ERROR;
+//
+//}
+
+
 #ifdef CONFIG_BUILD_KERNEL
 int main(int argc, FAR char *argv[])
 #else
 int commbridge_main(int argc, char *argv[])
 #endif
 {
+	int ret = -1;
+	struct ccfd16_data_s p;
 	/* invalid ParamSet */
 	if (*argv[1] != '-'){
-	  printf("Invalid options format: %s\n", argv[1]);
+	  printf("[Magfiner]:Invalid options format: %s\n", argv[1]);
 	  exit(EXIT_FAILURE);
 	}
 
-	/* start commbridge */
+	/* start magfinder */
 	if('s' == *(++argv[1])){
-		/* only exist a device  */
-		if (g_dev != NULL) {
-			printf("device already started.\n");
+
+		/* open serial port for the magfinder front */
+		ret = open("/dev/magfinder_front",O_RDWR);
+		if (ret < 0){
+			printf("[magfinder_front] open failed: %s\n", strerror(ret));
 			exit(EXIT_FAILURE);
 		}
 
-		/* create the device */
-		g_dev =  (CommBridge_t *)malloc(sizeof(CommBridge_t));
-
-		if (g_dev == NULL) {
-			printf("device implement error.\n");
-			goto fail;
+		/* read msg */
+		ret = read(ret,&p,sizeof(struct ccfd16_data_s));
+		if(ret < 0){
+			printf("[magfinder_front] write failed: %s\n", strerror(ret));
+		}else{
+			printf("[magfinder_front]:value1:%x value2:%x state:%d timestamp:%d \n",p._A,p._B,p._state,p._time_stamp);
 		}
 
-		/* initialize the device */
-		if (OK != init()) {
-			goto fail;
-			printf("device initialize error.\n");
+		/* open serial port for the magfinder front */
+		ret = open("/dev/magfinder_back",O_RDWR);
+		if (ret < 0){
+			printf("[magfinder_back] open failed: %s\n", strerror(ret));
 			exit(EXIT_FAILURE);
 		}
 
-		/* open serial port for the device */
-		g_dev->_fd = open("/dev/ttyS1", O_RDWR);
-		if (g_dev->_fd < 0){
-			printf(stderr, "ERROR: open failed: %d.\n", errno);
-			goto fail;
+		/* read msg */
+		ret = read(ret,&p,sizeof(struct ccfd16_data_s));
+		if(ret < 0){
+			printf("[magfinder_back] write failed: %s\n", strerror(ret));
+		}else{
+			printf("[magfinder_back]:value1:%x value2:%x state:%d timestamp:%d \n",p._A,p._B,p._state,p._time_stamp);
 		}
 
-		/* start the device */
-		if (g_dev->start(argv) < 0){
-			printf(stderr, "ERROR: start failed: %d.\n", errno);
-			goto fail;
-		}
-
-	}
-
-	/* stop commbridge */
-	if('c' == *(++argv[1])){
-		//....
 	}
 
 	exit(EXIT_SUCCESS);
 	return OK;
 
-	fail:
-		if (g_dev != NULL) {
-			free(g_dev);
-			g_dev = NULL;
-		}
-		printf("device start failed");
-        return ERROR;
-
 }
-

@@ -73,6 +73,10 @@
 #  include "stm32_usbhost.h"
 #endif
 
+#ifdef CONFIG_CCF_D16
+#include <nuttx/sensors/ccfd16_serial.h>
+#endif
+
 #include "stm32.h"
 #include "stm32f429i-disco.h"
 
@@ -166,6 +170,8 @@ int board_app_initialize(uintptr_t arg)
 #elif defined(HAVE_USBHOST) || defined(HAVE_USBMONITOR)
   int ret;
 #elif defined(CONFIG_SENSORS_L3GD20)
+  int ret;
+#elif defined(CONFIG_CCF_D16)
   int ret;
 #endif
 
@@ -385,6 +391,14 @@ int board_app_initialize(uintptr_t arg)
   if (ret != OK)
     {
       syslog(LOG_ERR, "ERROR: Failed to initialize l3gd20 sensor: %d\n", ret);
+    }
+#endif
+
+#ifdef CONFIG_CCF_D16
+  ret = ccfd16_register();
+  if (ret != OK)
+    {
+      syslog(LOG_ERR, "ERROR: Failed to initialize CCF-D16 sensor: %d\n", ret);
     }
 #endif
 
