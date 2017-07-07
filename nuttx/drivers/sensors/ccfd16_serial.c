@@ -102,13 +102,13 @@ static const struct ccfd16_ops_s g_ccfd16_ops = {
 static struct ccfd16_dev_s g_ccfd16_dev[MAGFINDER_DEV_MAX] = {
 		{
 				.ops = &g_ccfd16_ops,
-				.devpath ="/dev/magfinder_front",
+				.devpath ="/dev/magf",
 				.serpath ="/dev/ttyS2",
 				.serfd = -1,
 		},
 		{
 				.ops = &g_ccfd16_ops,
-				.devpath ="/dev/magfinder_back",
+				.devpath ="/dev/magb",
 				.serpath ="/dev/ttyS3",
 				.serfd = -1,
 		}
@@ -273,7 +273,7 @@ static int ccfd16_cycle(FAR struct ccfd16_dev_s *priv)
 {
 	int ret = -1 , nbyte = 0, i = 0;
 
-	static char pool[6];
+	static char pool[MAGFINDER_MSG_LEN];
 
 	/* read char from serial */
 	nbyte = priv->ops->getmagval(priv,pool);
@@ -324,7 +324,7 @@ static int ccfd16_getmagval(FAR struct ccfd16_dev_s *priv ,char *buff)
 	}
 
 	/* read data from serial */
-	ret = read(priv->serfd,buff,6);
+	ret = read(priv->serfd,buff,MAGFINDER_MSG_LEN);
 	if(ret < -1)
 	{
 		printf("[%s] read serial port failed: %s\n",priv->devpath, strerror(ret));

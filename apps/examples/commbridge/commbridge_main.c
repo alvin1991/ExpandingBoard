@@ -282,33 +282,33 @@ int commbridge_main(int argc, char *argv[])
 		/*
 		 * open serial port for magfinder front
 		 * */
-		ret = open("/dev/magfinder_front",O_RDWR);
+		ret = open("/dev/magf",O_RDWR);
 		if (ret < 0){
-			printf("[magfinder_front] open failed: %s\n", strerror(ret));
+			printf("[magf] open failed: %s\n", strerror(ret));
 			exit(EXIT_FAILURE);
 		}
 
 		ret = read(ret,&ccfd16,sizeof(struct ccfd16_data_s));
 		if(ret < 0){
-			printf("[magfinder_front] read failed: %s\n", strerror(ret));
+			printf("[magf] read failed: %s\n", strerror(ret));
 		}else{
-			printf("[magfinder_front]:value1:%x value2:%x state:%d timestamp:%d \n",ccfd16._A,ccfd16._B,ccfd16._state,ccfd16._time_stamp);
+			printf("[magf]:value1:%x value2:%x state:%d timestamp:%d \n",ccfd16._A,ccfd16._B,ccfd16._state,ccfd16._time_stamp);
 		}
 
 		/*
 		 * open serial port for magfinder front
 		 * */
-		ret = open("/dev/magfinder_back",O_RDWR);
+		ret = open("/dev/magb",O_RDWR);
 		if (ret < 0){
-			printf("[magfinder_back] open failed: %s\n", strerror(ret));
+			printf("[magb] open failed: %s\n", strerror(ret));
 			exit(EXIT_FAILURE);
 		}
 
 		ret = read(ret,&ccfd16,sizeof(struct ccfd16_data_s));
 		if(ret < 0){
-			printf("[magfinder_back] read failed: %s\n", strerror(ret));
+			printf("[magb] read failed: %s\n", strerror(ret));
 		}else{
-			printf("[magfinder_back]:value1:%x value2:%x state:%d timestamp:%d \n",ccfd16._A,ccfd16._B,ccfd16._state,ccfd16._time_stamp);
+			printf("[magb]:value1:%x value2:%x state:%d timestamp:%d \n",ccfd16._A,ccfd16._B,ccfd16._state,ccfd16._time_stamp);
 		}
 
 		/*
