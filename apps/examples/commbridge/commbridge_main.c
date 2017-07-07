@@ -54,6 +54,7 @@
 #include <nuttx/arch.h>
 #include <nuttx/wqueue.h>
 #include <nuttx/sensors/ccfd16_serial.h>
+#include <nuttx/sensors/ccf_rfid_serial.h>
 
 //mavlink
 #include "mavlink/minimal/mavlink.h"
@@ -266,7 +267,9 @@ int commbridge_main(int argc, char *argv[])
 #endif
 {
 	int ret = -1;
-	struct ccfd16_data_s p;
+	struct ccfd16_data_s ccfd16;
+	struct ccf_rfid_data_s ccf_rfid;
+
 	/* invalid ParamSet */
 	if (*argv[1] != '-'){
 	  printf("[Magfiner]:Invalid options format: %s\n", argv[1]);
@@ -276,34 +279,52 @@ int commbridge_main(int argc, char *argv[])
 	/* start magfinder */
 	if('s' == *(++argv[1])){
 
-		/* open serial port for the magfinder front */
+		/*
+		 * open serial port for magfinder front
+		 * */
 		ret = open("/dev/magfinder_front",O_RDWR);
 		if (ret < 0){
 			printf("[magfinder_front] open failed: %s\n", strerror(ret));
 			exit(EXIT_FAILURE);
 		}
 
-		/* read msg */
-		ret = read(ret,&p,sizeof(struct ccfd16_data_s));
+		ret = read(ret,&ccfd16,sizeof(struct ccfd16_data_s));
 		if(ret < 0){
-			printf("[magfinder_front] write failed: %s\n", strerror(ret));
+			printf("[magfinder_front] read failed: %s\n", strerror(ret));
 		}else{
-			printf("[magfinder_front]:value1:%x value2:%x state:%d timestamp:%d \n",p._A,p._B,p._state,p._time_stamp);
+			printf("[magfinder_front]:value1:%x value2:%x state:%d timestamp:%d \n",ccfd16._A,ccfd16._B,ccfd16._state,ccfd16._time_stamp);
 		}
 
-		/* open serial port for the magfinder front */
+		/*
+		 * open serial port for magfinder front
+		 * */
 		ret = open("/dev/magfinder_back",O_RDWR);
 		if (ret < 0){
 			printf("[magfinder_back] open failed: %s\n", strerror(ret));
 			exit(EXIT_FAILURE);
 		}
 
-		/* read msg */
-		ret = read(ret,&p,sizeof(struct ccfd16_data_s));
+		ret = read(ret,&ccfd16,sizeof(struct ccfd16_data_s));
 		if(ret < 0){
-			printf("[magfinder_back] write failed: %s\n", strerror(ret));
+			printf("[magfinder_back] read failed: %s\n", strerror(ret));
 		}else{
-			printf("[magfinder_back]:value1:%x value2:%x state:%d timestamp:%d \n",p._A,p._B,p._state,p._time_stamp);
+			printf("[magfinder_back]:value1:%x value2:%x state:%d timestamp:%d \n",ccfd16._A,ccfd16._B,ccfd16._state,ccfd16._time_stamp);
+		}
+
+		/*
+		 * open serial port for RFID sensor
+		 * */
+		ret = open("/dev/rfid",O_RDWR);
+		if (ret < 0){
+			printf("[rfid] open failed: %s\n", strerror(ret));
+			exit(EXIT_FAILURE);
+		}
+
+		ret = read(ret,&ccf_rfid,sizeof(struct ccf_rfid_data_s));
+		if(ret < 0){
+			printf("[rfid] read failed: %s\n", strerror(ret));
+		}else{
+			printf("[rfid]:ID:%x state:%d timestamp:%d \n",ccf_rfid.ID,ccf_rfid._state,ccf_rfid._time_stamp);
 		}
 
 	}

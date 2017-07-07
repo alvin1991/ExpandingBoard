@@ -166,6 +166,12 @@ ifeq ($(CONFIG_CCF_D16),y)
   CSRCS += ccfd16_serial.c
 endif
 
+# CCF-RFID
+
+ifeq ($(CONFIG_CCF_RFID),y)
+  CSRCS += ccf_rfid_serial.c
+endif
+
 # Include sensor driver build support
 
 DEPPATH += --dep-path sensors

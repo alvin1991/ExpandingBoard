@@ -77,6 +77,10 @@
 #include <nuttx/sensors/ccfd16_serial.h>
 #endif
 
+#ifdef CONFIG_CCF_RFID
+#include <nuttx/sensors/ccf_rfid_serial.h>
+#endif
+
 #include "stm32.h"
 #include "stm32f429i-disco.h"
 
@@ -399,6 +403,14 @@ int board_app_initialize(uintptr_t arg)
   if (ret != OK)
     {
       syslog(LOG_ERR, "ERROR: Failed to initialize CCF-D16 sensor: %d\n", ret);
+    }
+#endif
+
+#ifdef CONFIG_CCF_RFID
+  ret = ccf_rfid_register();
+  if (ret != OK)
+    {
+      syslog(LOG_ERR, "ERROR: Failed to initialize CCF-RFID sensor: %d\n", ret);
     }
 #endif
 

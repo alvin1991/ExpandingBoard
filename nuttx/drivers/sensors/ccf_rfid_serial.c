@@ -14,44 +14,59 @@
 #include <nuttx/fs/fs.h>
 #include <nuttx/wqueue.h>
 #include <time.h>
-#include <nuttx/sensors/ccfd16_serial.h>
+#include <nuttx/sensors/ccf_rfid_serial.h>
 
 
 /*
  * Character Driver Methods
  * */
-static int     ccfd16_open (FAR struct file *filep);
-static int     ccfd16_close(FAR struct file *filep);
-static ssize_t ccfd16_read(FAR struct file *filep, FAR char *buffer,
+static int     ccf_rfid_open (FAR struct file *filep);
+static int     ccf_rfid_close(FAR struct file *filep);
+static ssize_t ccf_rfid_read(FAR struct file *filep, FAR char *buffer,
                             size_t buflen);
-static ssize_t ccfd16_write(FAR struct file *filep, FAR const char *buffer,
+static ssize_t ccf_rfid_write(FAR struct file *filep, FAR const char *buffer,
                              size_t buflen);
-static int     ccfd16_ioctl(FAR struct file *filep, int cmd,
+static int     ccf_rfid_ioctl(FAR struct file *filep, int cmd,
                              unsigned long arg);
 /****************************************************************************
  * Private Data
  ****************************************************************************/
-struct ccfd16_dev_s
+enum fdsd
 {
-  FAR const struct ccfd16_ops_s   *ops;
+	GOOD,
+	HEAD,
+	LEN_OK,
+	DATA_OK,
+	CHECK_OK,
+
+	INVALID_STEP = -1,
+	LEN_FAILED = -2,
+	DATA_FAILED = -3,
+	CHECK_FAILED = -4,
+
+};
+
+struct ccf_rfid_dev_s
+{
+  FAR const struct ccf_rfid_ops_s   *ops;
   const char *					  devpath;
   const char *				      serpath;
   int							  serfd;
   struct work_s	    			  _work;
-  struct ccfd16_msg_s 			  _msg;
-  struct ccfd16_data_s			  _data;
+  struct ccf_rfid_msg_s 		  _msg;
+  struct ccf_rfid_data_s		  _data;
   bool							  _started;
 };
 
 /* file operations interface */
 static const struct file_operations g_fops =
 {
-  ccfd16_open,
-  ccfd16_close,
-  ccfd16_read,
-  ccfd16_write,
+  ccf_rfid_open,
+  ccf_rfid_close,
+  ccf_rfid_read,
+  ccf_rfid_write,
   NULL,
-  ccfd16_ioctl,
+  ccf_rfid_ioctl,
 #ifndef CONFIG_DISABLE_POLL
   NULL,
 #endif
@@ -60,58 +75,52 @@ static const struct file_operations g_fops =
 #endif
 };
 
-struct ccfd16_ops_s
+struct ccf_rfid_ops_s
 {
-	CODE int (*config)(FAR struct ccfd16_dev_s *priv);
-	CODE int (*start)(FAR struct ccfd16_dev_s *priv);
-	CODE int (*stop)(FAR struct ccfd16_dev_s *priv);
-	CODE int (*cycle)(FAR struct ccfd16_dev_s *priv);
-	CODE int (*getmagval)(FAR struct ccfd16_dev_s *priv,char *buff);
-	CODE int (*decode)(FAR struct ccfd16_dev_s *priv,char c);
+	CODE int (*config)(FAR struct ccf_rfid_dev_s *priv);
+	CODE int (*start)(FAR struct ccf_rfid_dev_s *priv);
+	CODE int (*stop)(FAR struct ccf_rfid_dev_s *priv);
+	CODE int (*cycle)(FAR struct ccf_rfid_dev_s *priv);
+	CODE int (*getmagval)(FAR struct ccf_rfid_dev_s *priv,char *buff);
+	CODE int (*decode)(FAR struct ccf_rfid_dev_s *priv,char c);
 };
 
 /****************************************************************************
  * Private Function Prototypes
  ****************************************************************************/
 
-static int ccfd16_config(FAR struct ccfd16_dev_s *priv);
-static int ccfd16_start(FAR struct ccfd16_dev_s *priv);
-static int ccfd16_stop(FAR struct ccfd16_dev_s *priv);
-static int ccfd16_cycle(FAR struct ccfd16_dev_s *priv);
-static int ccfd16_getmagval(FAR struct ccfd16_dev_s *priv ,char *buff);
-static int ccfd16_decode(FAR struct ccfd16_dev_s *priv,char c);
+static int ccf_rfid_config(FAR struct ccf_rfid_dev_s *priv);
+static int ccf_rfid_start(FAR struct ccf_rfid_dev_s *priv);
+static int ccf_rfid_stop(FAR struct ccf_rfid_dev_s *priv);
+static int ccf_rfid_cycle(FAR struct ccf_rfid_dev_s *priv);
+static int ccf_rfid_getmagval(FAR struct ccf_rfid_dev_s *priv ,char *buff);
+static int ccf_rfid_decode(FAR struct ccf_rfid_dev_s *priv,char c);
 
 
 /****************************************************************************
  * Device operations interface
  ****************************************************************************/
 
-static const struct ccfd16_ops_s g_ccfd16_ops = {
-   .config = ccfd16_config,
-   .start = ccfd16_start,
-   .stop = ccfd16_stop,
-   .cycle = ccfd16_cycle,
-   .getmagval = ccfd16_getmagval,
-   .decode = ccfd16_decode,
+static const struct ccf_rfid_ops_s g_ccf_rfid_ops = {
+   .config = ccf_rfid_config,
+   .start = ccf_rfid_start,
+   .stop = ccf_rfid_stop,
+   .cycle = ccf_rfid_cycle,
+   .getmagval = ccf_rfid_getmagval,
+   .decode = ccf_rfid_decode,
 };
 
 
 /****************************************************************************
  * Single linked list to store instances of drivers
  ****************************************************************************/
-static struct ccfd16_dev_s g_ccfd16_dev[MAGFINDER_DEV_MAX] = {
+static struct ccf_rfid_dev_s g_ccf_rfid_dev[RFID_DEV_MAX] = {
 		{
-				.ops = &g_ccfd16_ops,
-				.devpath ="/dev/magfinder_front",
-				.serpath ="/dev/ttyS2",
+				.ops = &g_ccf_rfid_ops,
+				.devpath ="/dev/rfid",
+				.serpath ="/dev/ttyS4",
 				.serfd = -1,
 		},
-		{
-				.ops = &g_ccfd16_ops,
-				.devpath ="/dev/magfinder_back",
-				.serpath ="/dev/ttyS3",
-				.serfd = -1,
-		}
 };
 
 
@@ -123,40 +132,40 @@ static struct ccfd16_dev_s g_ccfd16_dev[MAGFINDER_DEV_MAX] = {
  ****************************************************************************/
 
 /****************************************************************************
- * Name: ccfd16_open
+ * Name: ccf_rfid_open
  *
  * Description:
  *   This method is called when the device is opened.
  *
  ****************************************************************************/
-static int ccfd16_open(FAR struct file *filep)
+static int ccf_rfid_open(FAR struct file *filep)
 {
   return OK;
 }
 
 /****************************************************************************
- * Name: ccfd16_close
+ * Name: ccf_rfid_close
  *
  * Description:
  *   This method is called when the device is closed.
  *
  ****************************************************************************/
-static int ccfd16_close(FAR struct file *filep)
+static int ccf_rfid_close(FAR struct file *filep)
 {
   return OK;
 }
 
 /****************************************************************************
- * Name: ccfd16_read
+ * Name: ccf_rfid_read
  *
  * Description:
  *   This method is called when the device is closed.
  *
  ****************************************************************************/
-static ssize_t ccfd16_read(FAR struct file *filep, FAR char *buffer,size_t buflen)
+static ssize_t ccf_rfid_read(FAR struct file *filep, FAR char *buffer,size_t buflen)
 {
 	  FAR struct inode        *inode = filep->f_inode;
-	  FAR struct ccfd16_dev_s *priv  = inode->i_private;
+	  FAR struct ccf_rfid_dev_s *priv  = inode->i_private;
 	  int ret = -1;
 
 	  if (!buffer){
@@ -183,16 +192,16 @@ static ssize_t ccfd16_read(FAR struct file *filep, FAR char *buffer,size_t bufle
 }
 
 /****************************************************************************
- * Name: ccfd16_write
+ * Name: ccf_rfid_write
  *
  * Description:
  *   This method is called when the device is closed.
  *
  ****************************************************************************/
-static ssize_t ccfd16_write(FAR struct file *filep, FAR const char *buffer,size_t buflen)
+static ssize_t ccf_rfid_write(FAR struct file *filep, FAR const char *buffer,size_t buflen)
 {
 	  FAR struct inode        *inode = filep->f_inode;
-	  FAR struct ccfd16_dev_s *priv  = inode->i_private;
+	  FAR struct ccf_rfid_dev_s *priv  = inode->i_private;
 
 	  if (!buffer){
 	      snerr("ERROR: Buffer is null\n");
@@ -200,19 +209,19 @@ static ssize_t ccfd16_write(FAR struct file *filep, FAR const char *buffer,size_
 	  }
 
 	  /* Get the pressure compensated */
-	  //ccfd16_start(priv);
+	  //ccf_rfid_start(priv);
 
 	  return OK;
 }
 
 /****************************************************************************
- * Name: ccfd16_ioctl
+ * Name: ccf_rfid_ioctl
  *
  * Description:
  *   This method is called when the device is closed.
  *
  ****************************************************************************/
-static int  ccfd16_ioctl(FAR struct file *filep, int cmd,unsigned long arg)
+static int  ccf_rfid_ioctl(FAR struct file *filep, int cmd,unsigned long arg)
 {
 	return 1;
 }
@@ -220,16 +229,16 @@ static int  ccfd16_ioctl(FAR struct file *filep, int cmd,unsigned long arg)
 
 
 /****************************************************************************
- * ccfd16 Operations
+ * ccf_rfid Operations
  ****************************************************************************/
 
 /****************************************************************************
- * Name: ccfd16_config
+ * Name: ccf_rfid_config
  *
  * Description:
  *   Configure the magfinder.
  ****************************************************************************/
-static int ccfd16_config(FAR struct ccfd16_dev_s *priv)
+static int ccf_rfid_config(FAR struct ccf_rfid_dev_s *priv)
 {
   /* Sanity check */
   DEBUGASSERT(priv != NULL);
@@ -238,13 +247,13 @@ static int ccfd16_config(FAR struct ccfd16_dev_s *priv)
 }
 
 /****************************************************************************
- * Name: ccfd16_start
+ * Name: ccf_rfid_start
  *
  * Description:
  *   This method is uesd to starting device
  *
  ****************************************************************************/
-static int ccfd16_start(FAR struct ccfd16_dev_s *priv)
+static int ccf_rfid_start(FAR struct ccf_rfid_dev_s *priv)
 {
 	int ret = -1;
 
@@ -257,30 +266,30 @@ static int ccfd16_start(FAR struct ccfd16_dev_s *priv)
 	return ret;
 }
 
-static int ccfd16_stop(FAR struct ccfd16_dev_s *priv)
+static int ccf_rfid_stop(FAR struct ccf_rfid_dev_s *priv)
 {
 	return OK;
 }
 
 /****************************************************************************
- * Name: ccfd16_cycle
+ * Name: ccf_rfid_cycle
  *
  * Description:
  *   This method is uesd for workqueue
  *
  ****************************************************************************/
-static int ccfd16_cycle(FAR struct ccfd16_dev_s *priv)
+static int ccf_rfid_cycle(FAR struct ccf_rfid_dev_s *priv)
 {
 	int ret = -1 , nbyte = 0, i = 0;
 
-	static char pool[6];
+	static char pool[RFID_MSG_LEN];
 
 	/* read char from serial */
 	nbyte = priv->ops->getmagval(priv,pool);
 	if(nbyte > 0){
 		for(i = 0; i < nbyte ;i++){
-
 			ret = priv->ops->decode(priv,pool[i]);
+
 			/* update mag data state*/
 			if(ret<0){
 				priv->_data._state = ret;
@@ -302,14 +311,14 @@ static int ccfd16_cycle(FAR struct ccfd16_dev_s *priv)
 }
 
 /****************************************************************************
- * Name: ccfd16_getmagval
+ * Name: ccf_rfid_getmagval
  *
  * Description:
  *   This method is called when need open the device serial port and read a char,
  *   and save into buff.
  *
  ****************************************************************************/
-static int ccfd16_getmagval(FAR struct ccfd16_dev_s *priv ,char *buff)
+static int ccf_rfid_getmagval(FAR struct ccf_rfid_dev_s *priv ,char *buff)
 
 {
 	int ret = 0;
@@ -324,7 +333,7 @@ static int ccfd16_getmagval(FAR struct ccfd16_dev_s *priv ,char *buff)
 	}
 
 	/* read data from serial */
-	ret = read(priv->serfd,buff,6);
+	ret = read(priv->serfd,buff,RFID_MSG_LEN);
 	if(ret < -1)
 	{
 		printf("[%s] read serial port failed: %s\n",priv->devpath, strerror(ret));
@@ -335,7 +344,7 @@ static int ccfd16_getmagval(FAR struct ccfd16_dev_s *priv ,char *buff)
 }
 
 /****************************************************************************
- * Name: ccfd16_decode
+ * Name: ccf_rfid_decode
  *
  * Description:
  *   This method is called when the massage need to be decode.
@@ -343,7 +352,7 @@ static int ccfd16_getmagval(FAR struct ccfd16_dev_s *priv ,char *buff)
  *Return:
  *see enum
  ****************************************************************************/
-static int ccfd16_decode(FAR struct ccfd16_dev_s *priv ,char c)
+static int ccf_rfid_decode(FAR struct ccf_rfid_dev_s *priv ,char c)
 {
 	int ret = -1;
 
@@ -361,7 +370,7 @@ static int ccfd16_decode(FAR struct ccfd16_dev_s *priv ,char c)
 	//len
 	case 1:
 		// out of mag lenth
-		if(0x04 != c){
+		if(0x07 != c){
 			priv->_msg.step = 0;
 			ret = LEN_FAILED;
 		}else{
@@ -382,14 +391,18 @@ static int ccfd16_decode(FAR struct ccfd16_dev_s *priv ,char c)
 		if(priv->_msg.lencnt >= priv->_msg.len){
 
 			//calc checksum
-			priv->_msg.ck = (char)(priv->_msg.len + priv->_msg.buff[0] + priv->_msg.buff[1] + priv->_msg.buff[2]);
+			priv->_msg.ck = (char)(priv->_msg.len \
+								 + priv->_msg.buff[0] \
+								 + priv->_msg.buff[1] \
+								 + priv->_msg.buff[2] \
+								 + priv->_msg.buff[3] \
+								 + priv->_msg.buff[4]);
 
 			// check checksum
-			if(priv->_msg.ck == priv->_msg.buff[3]){
+			if(priv->_msg.ck == priv->_msg.buff[5]){
 				struct timespec timer;
 				clock_gettime(CLOCK_MONOTONIC, &timer);
-				priv->_data._A = priv->_msg.buff[1];
-				priv->_data._B = priv->_msg.buff[2];
+				memcpy(&(priv->_data.ID),&(priv->_msg.buff[1]),sizeof(int));
 				priv->_data._time_stamp =timer.tv_sec;
 				ret = CHECK_OK;
 			}else{
@@ -414,10 +427,10 @@ static int ccfd16_decode(FAR struct ccfd16_dev_s *priv ,char c)
 
 
 /****************************************************************************
- * Name: ccfd16_register
+ * Name: ccf_rfid_register
  *
  * Description:
- *   Register the ccfd16 magfinder,  character
+ *   Register the ccf_rfid magfinder,  character
  *   device as 'devpath'.
  *
  * Input Parameters:NULL
@@ -426,31 +439,31 @@ static int ccfd16_decode(FAR struct ccfd16_dev_s *priv ,char c)
  *
  ****************************************************************************/
 
-int ccfd16_register(void)
+int ccf_rfid_register(void)
 {
   int ret = -1 ,cnt = 0;
 
   /* Configure the device */
 //  for (cnt  = 0 ; cnt < MAGFINDER_DEV_MAX ;cnt++){
-//	  ret = g_ccfd16_dev[cnt].ops->config(&g_ccfd16_dev[cnt]);
+//	  ret = g_ccf_rfid_dev[cnt].ops->config(&g_ccf_rfid_dev[cnt]);
 //	  if (ret < 0){
-//		  syslog(LOG_ERR,"[%s]: Failed to configure device: %d\n",g_ccfd16_dev[cnt].devpath, ret);
+//		  syslog(LOG_ERR,"[%s]: Failed to configure device: %d\n",g_ccf_rfid_dev[cnt].devpath, ret);
 //		  return ret;
 //	  }
 //  }
   /* Erase device memery */
-   for (cnt  = 0 ; cnt < MAGFINDER_DEV_MAX ;cnt++){
+   for (cnt  = 0 ; cnt < RFID_DEV_MAX ;cnt++){
 		/* erase msg buffer */
-		memset(&(g_ccfd16_dev[cnt]._msg),0,sizeof(g_ccfd16_dev[cnt]._msg));
+		memset(&(g_ccf_rfid_dev[cnt]._msg),0,sizeof(g_ccf_rfid_dev[cnt]._msg));
 		/* erase data buffer */
-		memset(&(g_ccfd16_dev[cnt]._data),0,sizeof(g_ccfd16_dev[cnt]._data));
+		memset(&(g_ccf_rfid_dev[cnt]._data),0,sizeof(g_ccf_rfid_dev[cnt]._data));
    }
 
   /* Register the character driver */
-  for (cnt = 0 ; cnt < MAGFINDER_DEV_MAX ; cnt++){
-	  ret = register_driver(g_ccfd16_dev[cnt].devpath, &g_fops, 0666, &(g_ccfd16_dev[cnt]));
+  for (cnt = 0 ; cnt < RFID_DEV_MAX ; cnt++){
+	  ret = register_driver(g_ccf_rfid_dev[cnt].devpath, &g_fops, 0666, &(g_ccf_rfid_dev[cnt]));
 	  if (ret < 0){
-		  syslog(LOG_ERR,"[%s]: Failed to register driver: %d\n",g_ccfd16_dev[cnt].devpath, ret);
+		  syslog(LOG_ERR,"[%s]: Failed to register driver: %d\n",g_ccf_rfid_dev[cnt].devpath, ret);
 		  return ret;
 	  }
   }

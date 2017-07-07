@@ -9,6 +9,12 @@ config CCF_D16
 	---help---
 		Enable driver support for the CCF D16 magnetic finder encoder.
 
+config CCF_RFID
+	bool "CCF-RFID Radio Frequency Identification Encoder support"
+	default n
+	---help---
+		Enable driver support for the CCF RFID encoder.
+
 config AS5048B
 	bool "AMS AS5048B Magnetic Rotary Encoder support"
 	default n
