@@ -224,7 +224,7 @@
 #define GPIO_USART3_RX GPIO_USART3_RX_1
 #define GPIO_USART3_TX GPIO_USART3_TX_1
 
-//UART4(ttyS3) Rx:PA1  Tx:PA0		-->magfinder back
+//UART4(ttyS3) Rx:PC11  Tx:PC10		-->magfinder back
 #define GPIO_UART4_RX GPIO_UART4_RX_2
 #define GPIO_UART4_TX GPIO_UART4_TX_2
 

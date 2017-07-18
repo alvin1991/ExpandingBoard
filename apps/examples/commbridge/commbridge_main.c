@@ -60,13 +60,13 @@
 #include "mavlink/minimal/mavlink.h"
 
 
-
 /****************************************************************************
  * Public Parameters
  ****************************************************************************/
 enum
 {
-	MAG_FINDER_FRONT = 0,
+	COMM_SERIAL = 0,
+	MAG_FINDER_FRONT,
 	MAG_FINDER_BACK,
 	RFID_READER,
 	ULTRA_SONIC,
@@ -79,7 +79,7 @@ typedef struct CommBridge
 	bool			    _should_exit;
 	int					_pid;
 	int					_fd[MAX_SENSOR_NUMS];
-	int (*cycle)(void);
+	void (*cycle)(void);
 }CommBridge_t;
 
 static CommBridge_t	*g_dev;
@@ -93,36 +93,31 @@ static void
 cycle(void)
 {
 
-	int fd,byte_send,len,ret = -1;
+	int byte_send,len,ret = -1;
 	struct ccfd16_data_s ccfd16f;
 	struct ccfd16_data_s ccfd16b;
 	struct ccf_rfid_data_s ccf_rfid;
-
+	uint8_t buf[50];
 	/*
 	 * Mavlink Package
 	 */
 	mavlink_message_t  msgpacket;
 	memset(&msgpacket,0,sizeof(msgpacket));
 
-	/*
-	 * Mavlink heartbeat
-	 */
-	mavlink_heartbeat_t packet_in ={
-	0,
-	MAV_TYPE_GROUND_ROVER,
-	MAV_AUTOPILOT_PIXHAWK,
-	MAV_MODE_FLAG_DECODE_POSITION_STABILIZE,
-	MAV_STATE_ACTIVE,
-	2};
-	mavlink_heartbeat_t heartbeat;
-	memset(&heartbeat,0,sizeof(heartbeat));
-	heartbeat.custom_mode = packet_in.custom_mode;
-	heartbeat.type = packet_in.type;
-	heartbeat.autopilot = packet_in.autopilot;
-	heartbeat.base_mode = packet_in.base_mode;
-	heartbeat.system_status = packet_in.system_status;
-	heartbeat.mavlink_version = packet_in.mavlink_version;
 
+	/*
+	 * Mavlink extboard
+	 */
+	mavlink_ext_board_t ext_board;
+	memset(&ext_board,0,sizeof(ext_board));
+
+
+	/* open serial port for communication with rover */
+	g_dev->_fd[COMM_SERIAL] = open("/dev/ttyS1",O_RDWR);
+	if (g_dev->_fd[COMM_SERIAL] < 0){
+		printf("[comm] open failed: %s\n", strerror(ret));
+		exit(EXIT_FAILURE);
+	}
 
 	/* open serial port for magfinder front */
 	g_dev->_fd[MAG_FINDER_FRONT] = open("/dev/magf",O_RDWR);
@@ -147,19 +142,7 @@ cycle(void)
 
 	while(!g_dev->_should_exit){
 
-		/*Send Heartbeat */
-//		len = mavlink_msg_heartbeat_encode(0x01,
-//				0x02,
-//				&msgpacket,
-//				&heartbeat);
-//		byte_send = write(g_dev->_fd,&msgpacket,len);
-//		if(byte_send > 0)
-//		{
-//			printf("write:%d\n",byte_send);
-//			byte_send = 0;
-//			usleep(2000000);
-//		}
-
+		/* read data from sensors */
 		ret = read(g_dev->_fd[MAG_FINDER_FRONT],&ccfd16f,sizeof(struct ccfd16_data_s));
 		if(ret < 0){
 			printf("[magf] read failed: %s\n", strerror(ret));
@@ -174,11 +157,28 @@ cycle(void)
 		if(ret < 0){
 			printf("[rfid] read failed: %s\n", strerror(ret));
 		}
-		printf("[magf]:%x %x {%d-%d}  [magb]:%x %x {%d-%d}   [rfid]:%x {%d-%d}\n",\
-				ccfd16f._A,ccfd16f._B,ccfd16f._state,ccfd16f._time_stamp,
-				ccfd16b._A,ccfd16b._B,ccfd16b._state,ccfd16b._time_stamp,
-				ccf_rfid.ID,ccf_rfid._state,ccf_rfid._time_stamp);
-		usleep(1000*1000);
+
+		//fill the mavlink package
+		ext_board.mag_f = (ccfd16f._A << 8) + ccfd16f._B;//0x11111111;
+		ext_board.mag_b = (ccfd16b._A << 8) + ccfd16b._B;//0x22222222;
+		ext_board.rfid  = ccf_rfid.ID;//0x33333333;
+		ext_board.ultrasonic = 0.123;
+
+		//send mavlink package via serial
+		mavlink_msg_ext_board_pack(0x01, 0x02, &msgpacket,
+				ext_board.mag_f,\
+				ext_board.mag_b,\
+				ext_board.rfid ,\
+				ext_board.ultrasonic);
+
+		len = mavlink_msg_to_send_buffer(buf, &msgpacket);
+
+		byte_send = write(g_dev->_fd[COMM_SERIAL],&buf,len);
+		if(byte_send < 0){
+			printf("[comm]:write error: %s\n",strerror(byte_send));
+		}
+
+		usleep(1000*1);
 	}
 
 }

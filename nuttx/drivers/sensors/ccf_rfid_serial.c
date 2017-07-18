@@ -178,7 +178,7 @@ static ssize_t ccf_rfid_read(FAR struct file *filep, FAR char *buffer,size_t buf
 		  ret = priv->ops->start(priv);
 		  if(!(ret < 0)){
 			  priv->_started = true;
-			  printf("rfid start... \n");
+			  printf("[%s] start... \n",priv->devpath);
 		  }else{
 			  printf("[%s]Restart failed :%s \n",priv->devpath,strerror(ret));
 		  }
@@ -286,7 +286,7 @@ static int ccf_rfid_cycle(FAR struct ccf_rfid_dev_s *priv)
 
 	/* read char from serial */
 	nbyte = priv->ops->getmagval(priv,pool);
-	if(nbyte > 0){priv->_data._state = nbyte;//GOOD;
+	if(nbyte > 0){
 		for(i = 0; i < nbyte ;i++){
 			ret = priv->ops->decode(priv,pool[i]);
 
@@ -294,8 +294,8 @@ static int ccf_rfid_cycle(FAR struct ccf_rfid_dev_s *priv)
 			if(ret<0){
 				priv->_data._state = ret;
 				printf("[%s]:Decode error:%d \n",priv->devpath,ret);
-			}else {//if( ret== CHECK_OK){
-				//priv->_data._state = ret;//GOOD
+			}else if( ret== CHECK_OK){
+				priv->_data._state = GOOD;
 			}
 		}
 	}

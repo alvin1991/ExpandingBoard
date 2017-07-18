@@ -169,7 +169,7 @@ static ssize_t ccfd16_read(FAR struct file *filep, FAR char *buffer,size_t bufle
 		  ret = priv->ops->start(priv);
 		  if(!(ret < 0)){
 			  priv->_started = true;
-			  printf("start... \n");
+			  printf("[%s] start... \n",priv->devpath);
 		  }else{
 			  printf("[%s]Restart failed :%s \n",priv->devpath,strerror(ret));
 		  }

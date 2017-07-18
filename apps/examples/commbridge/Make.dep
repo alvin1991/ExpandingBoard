@@ -59,4 +59,5 @@ commbridge_main.o: commbridge_main.c \
  mavlink/minimal/../mavlink_types.h mavlink/minimal/../mavlink_helpers.h \
  mavlink/minimal/../checksum.h mavlink/minimal/../mavlink_sha256.h \
  mavlink/minimal/./mavlink_msg_heartbeat.h \
+ mavlink/minimal/./mavlink_msg_ext_board.h \
  mavlink/minimal/../mavlink_get_info.h

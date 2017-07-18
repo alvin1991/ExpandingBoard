@@ -20,11 +20,11 @@ extern "C" {
 #endif
 
 #ifndef MAVLINK_MESSAGE_CRCS
-#define MAVLINK_MESSAGE_CRCS {{0, 50, 9, 0, 0, 0}}
+#define MAVLINK_MESSAGE_CRCS {{0, 50, 9, 0, 0, 0}, {227, 146, 16, 0, 0, 0}}
 #endif
 
 #ifndef MAVLINK_MESSAGE_INFO
-#define MAVLINK_MESSAGE_INFO {MAVLINK_MESSAGE_INFO_HEARTBEAT}
+#define MAVLINK_MESSAGE_INFO {MAVLINK_MESSAGE_INFO_HEARTBEAT, MAVLINK_MESSAGE_INFO_EXT_BOARD}
 #endif
 
 #include "../protocol.h"
@@ -145,6 +145,7 @@ typedef enum MAV_STATE
 
 // MESSAGE DEFINITIONS
 #include "./mavlink_msg_heartbeat.h"
+#include "./mavlink_msg_ext_board.h"
 
 // base include
 
