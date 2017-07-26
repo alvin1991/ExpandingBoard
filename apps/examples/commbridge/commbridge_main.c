@@ -277,7 +277,6 @@ int commbridge_main(int argc, char *argv[])
 			printf("communication bridge start error.\n");
 			exit(EXIT_FAILURE);
 		}
-
 	}
 
 	/* stop commbridge */
@@ -286,7 +285,7 @@ int commbridge_main(int argc, char *argv[])
 	}
 
 	exit(EXIT_SUCCESS);
-	return OK;
+	return true;
 
 	fail:
 		if (g_dev != NULL) {
