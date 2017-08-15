@@ -60,7 +60,11 @@
 
 static const uint32_t g_buttons[NUM_BUTTONS] =
 {
-  GPIO_BTN_USER
+  GPIO_BTN_USER,
+  GPIO_BTN_IO1,
+  GPIO_BTN_IO2,
+  GPIO_BTN_IO3,
+  GPIO_BTN_IO4
 };
 
 /****************************************************************************

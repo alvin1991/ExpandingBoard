@@ -1,3 +1,7 @@
+#backip files
+*.h~
+*.c~
+
 # Prerequisites
 *.d
 

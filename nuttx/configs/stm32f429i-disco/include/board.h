@@ -47,9 +47,10 @@
 # include <stdint.h>
 #endif
 
-#include "stm32_rcc.h"
-#include "stm32_sdio.h"
-#include "stm32.h"
+
+//#include "stm32_rcc.h"
+//#include "stm32_sdio.h"
+//#include "stm32.h"
 
 /************************************************************************************
  * Pre-processor Definitions
@@ -199,10 +200,18 @@
 /* The STM32F4 Discovery supports one button: */
 
 #define BUTTON_USER        0
+#define BUTTON_IO1         1
+#define BUTTON_IO2         2
+#define BUTTON_IO3         3
+#define BUTTON_IO4         4
 
-#define NUM_BUTTONS        1
+#define NUM_BUTTONS        5 //1个是普通按键，另外4个是超声波IO信号
 
 #define BUTTON_USER_BIT    (1 << BUTTON_USER)
+#define BUTTON_IO1_BIT     (1 << BUTTON_IO1)
+#define BUTTON_IO2_BIT     (1 << BUTTON_IO2)
+#define BUTTON_IO3_BIT     (1 << BUTTON_IO3)
+#define BUTTON_IO4_BIT     (1 << BUTTON_IO4)
 
 /* Alternate function pin selections ************************************************/
 

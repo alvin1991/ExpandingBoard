@@ -1,18 +1,21 @@
-commbridge_main.o: commbridge_main.c \
- /home/alvin/Desktop/FC/ExpandingBoard/nuttx/include/stdlib.h \
+buttons_main.o: buttons_main.c \
  /home/alvin/Desktop/FC/ExpandingBoard/nuttx/include/nuttx/config.h \
- /home/alvin/Desktop/FC/ExpandingBoard/nuttx/include/nuttx/compiler.h \
- /home/alvin/Desktop/FC/ExpandingBoard/nuttx/include/sys/types.h \
+ /home/alvin/Desktop/FC/ExpandingBoard/nuttx/include/sys/ioctl.h \
+ /home/alvin/Desktop/FC/ExpandingBoard/nuttx/include/nuttx/fs/ioctl.h \
+ /home/alvin/Desktop/FC/ExpandingBoard/nuttx/include/nuttx/serial/tioctl.h \
  /home/alvin/Desktop/FC/ExpandingBoard/nuttx/include/stdint.h \
+ /home/alvin/Desktop/FC/ExpandingBoard/nuttx/include/nuttx/compiler.h \
  /home/alvin/Desktop/FC/ExpandingBoard/nuttx/include/arch/types.h \
  /home/alvin/Desktop/FC/ExpandingBoard/nuttx/include/limits.h \
  /home/alvin/Desktop/FC/ExpandingBoard/nuttx/include/arch/limits.h \
+ /home/alvin/Desktop/FC/ExpandingBoard/nuttx/include/stdbool.h \
+ /home/alvin/Desktop/FC/ExpandingBoard/nuttx/include/stdlib.h \
+ /home/alvin/Desktop/FC/ExpandingBoard/nuttx/include/sys/types.h \
  /home/alvin/Desktop/FC/ExpandingBoard/nuttx/include/string.h \
  /home/alvin/Desktop/FC/ExpandingBoard/nuttx/include/stddef.h \
  /home/alvin/Desktop/FC/ExpandingBoard/nuttx/include/stdio.h \
  /opt/gcc-arm-none-eabi-4_9-2015q3/lib/gcc/arm-none-eabi/4.9.3/include/stdarg.h \
  /home/alvin/Desktop/FC/ExpandingBoard/nuttx/include/sched.h \
- /home/alvin/Desktop/FC/ExpandingBoard/nuttx/include/stdbool.h \
  /home/alvin/Desktop/FC/ExpandingBoard/nuttx/include/nuttx/sched.h \
  /home/alvin/Desktop/FC/ExpandingBoard/nuttx/include/queue.h \
  /home/alvin/Desktop/FC/ExpandingBoard/nuttx/include/signal.h \
@@ -47,19 +50,4 @@ commbridge_main.o: commbridge_main.c \
  /home/alvin/Desktop/FC/ExpandingBoard/nuttx/include/poll.h \
  /home/alvin/Desktop/FC/ExpandingBoard/nuttx/include/fcntl.h \
  /home/alvin/Desktop/FC/ExpandingBoard/nuttx/include/errno.h \
- /home/alvin/Desktop/FC/ExpandingBoard/nuttx/include/nuttx/arch.h \
- /home/alvin/Desktop/FC/ExpandingBoard/nuttx/include/nuttx/wqueue.h \
- /home/alvin/Desktop/FC/ExpandingBoard/nuttx/include/nuttx/sensors/ccfd16_serial.h \
- /home/alvin/Desktop/FC/ExpandingBoard/nuttx/include/nuttx/sensors/ioctl.h \
- /home/alvin/Desktop/FC/ExpandingBoard/nuttx/include/nuttx/fs/ioctl.h \
- /home/alvin/Desktop/FC/ExpandingBoard/nuttx/include/nuttx/serial/tioctl.h \
- /home/alvin/Desktop/FC/ExpandingBoard/nuttx/include/nuttx/sensors/ccf_rfid_serial.h \
- /home/alvin/Desktop/FC/ExpandingBoard/nuttx/include/nuttx/input/buttons.h \
- /home/alvin/Desktop/FC/ExpandingBoard/nuttx/include/arch/board/board.h \
- mavlink/minimal/mavlink.h mavlink/minimal/version.h \
- mavlink/minimal/minimal.h mavlink/minimal/../protocol.h \
- mavlink/minimal/../mavlink_types.h mavlink/minimal/../mavlink_helpers.h \
- mavlink/minimal/../checksum.h mavlink/minimal/../mavlink_sha256.h \
- mavlink/minimal/./mavlink_msg_heartbeat.h \
- mavlink/minimal/./mavlink_msg_ext_board.h \
- mavlink/minimal/../mavlink_get_info.h
+ /home/alvin/Desktop/FC/ExpandingBoard/nuttx/include/nuttx/input/buttons.h

@@ -49,6 +49,10 @@
 #include <nuttx/lcd/ili9341.h>
 #endif
 
+#include "stm32_rcc.h"
+#include "stm32_sdio.h"
+#include "stm32.h"
+
 /****************************************************************************************************
  * Pre-processor Definitions
  ****************************************************************************************************/
@@ -87,10 +91,15 @@
 /* BUTTONS -- NOTE that all have EXTI interrupts configured */
 
 #define MIN_IRQBUTTON   BUTTON_USER
-#define MAX_IRQBUTTON   BUTTON_USER
-#define NUM_IRQBUTTONS  1
+#define MAX_IRQBUTTON   BUTTON_IO4
+#define NUM_IRQBUTTONS  NUM_BUTTONS
 
 #define GPIO_BTN_USER   (GPIO_INPUT|GPIO_FLOAT|GPIO_EXTI|GPIO_PORTA|GPIO_PIN0)
+#define GPIO_BTN_IO1    (GPIO_INPUT|GPIO_FLOAT|GPIO_EXTI|GPIO_PORTB|GPIO_PIN4)
+#define GPIO_BTN_IO2    (GPIO_INPUT|GPIO_FLOAT|GPIO_EXTI|GPIO_PORTB|GPIO_PIN5)
+#define GPIO_BTN_IO3    (GPIO_INPUT|GPIO_FLOAT|GPIO_EXTI|GPIO_PORTB|GPIO_PIN6)
+#define GPIO_BTN_IO4    (GPIO_INPUT|GPIO_FLOAT|GPIO_EXTI|GPIO_PORTB|GPIO_PIN7)
+
 
 /* PWM
  *

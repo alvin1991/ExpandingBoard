@@ -81,6 +81,10 @@
 #include <nuttx/sensors/ccf_rfid_serial.h>
 #endif
 
+#ifdef CONFIG_BUTTONS
+#  include <nuttx/input/buttons.h>
+#endif
+
 #include "stm32.h"
 #include "stm32f429i-disco.h"
 
@@ -411,6 +415,16 @@ int board_app_initialize(uintptr_t arg)
   if (ret != OK)
     {
       syslog(LOG_ERR, "ERROR: Failed to initialize CCF-RFID sensor: %d\n", ret);
+    }
+#endif
+
+#ifdef CONFIG_BUTTONS
+  /* Register the BUTTON driver */
+
+  ret = btn_lower_initialize("/dev/buttons");
+  if (ret < 0)
+    {
+      syslog(LOG_ERR, "ERROR: btn_lower_initialize() failed: %d\n", ret);
     }
 #endif
 

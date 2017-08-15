@@ -55,6 +55,8 @@
 #include <nuttx/wqueue.h>
 #include <nuttx/sensors/ccfd16_serial.h>
 #include <nuttx/sensors/ccf_rfid_serial.h>
+#include <nuttx/input/buttons.h>
+#include <arch/board/board.h>
 
 //mavlink
 #include "mavlink/minimal/mavlink.h"
@@ -97,6 +99,8 @@ cycle(void)
 	struct ccfd16_data_s ccfd16f;
 	struct ccfd16_data_s ccfd16b;
 	struct ccf_rfid_data_s ccf_rfid;
+	uint8_t i;
+	btn_buttonset_t sample = 0, oldsample = 0;
 	uint8_t buf[50];
 	/*
 	 * Mavlink Package
@@ -140,6 +144,14 @@ cycle(void)
 		exit(EXIT_FAILURE);
 	}
 
+	/* open IO for ultra sonic sensor */
+	g_dev->_fd[ULTRA_SONIC] = open("/dev/buttons", O_RDONLY|O_NONBLOCK);
+	if (g_dev->_fd[ULTRA_SONIC] < 0){
+		printf("[buttons] open failed:%x %s\n",g_dev->_fd[ULTRA_SONIC], strerror(ret));
+		exit(EXIT_FAILURE);
+	}
+
+
 	while(!g_dev->_should_exit){
 
 		/* read data from sensors */
@@ -158,18 +170,43 @@ cycle(void)
 			printf("[rfid] read failed: %s\n", strerror(ret));
 		}
 
+		ret = read(g_dev->_fd[ULTRA_SONIC],&sample,sizeof(sample));
+		if(ret < 0){
+			printf("[buttons] read failed: %s\n", strerror(ret));
+		}
+
+		for (i = 0; i < NUM_BUTTONS; i++){
+		   if ((sample & (1 << i)) && !(oldsample & (1 << i))){
+			   ext_board.ultrasonic[i] = 0;
+			   printf("%d was pressed\n", i);
+			}
+
+		   if (!(sample & (1 << i)) && (oldsample & (1 << i))){
+			   ext_board.ultrasonic[i] = 1;
+			  printf("%d was released\n", i);
+		 	}
+		 }
+
+	    oldsample = sample;
+
 		//fill the mavlink package
 		ext_board.mag_f = (ccfd16f._A << 8) + ccfd16f._B;//0x11111111;
 		ext_board.mag_b = (ccfd16b._A << 8) + ccfd16b._B;//0x22222222;
+
 		ext_board.rfid  = ccf_rfid.ID;//0x33333333;
-		ext_board.ultrasonic = 0.123;
+
+		ext_board.Encoder[0] = 1;
+		ext_board.Encoder[1] = 2;
+		ext_board.Encoder[2] = 3;
+		ext_board.Encoder[3] = 4;
 
 		//send mavlink package via serial
 		mavlink_msg_ext_board_pack(0x01, 0x02, &msgpacket,
 				ext_board.mag_f,\
 				ext_board.mag_b,\
 				ext_board.rfid ,\
-				ext_board.ultrasonic);
+				ext_board.ultrasonic,\
+				ext_board.Encoder);
 
 		len = mavlink_msg_to_send_buffer(buf, &msgpacket);
 
