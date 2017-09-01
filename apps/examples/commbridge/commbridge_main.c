@@ -57,6 +57,7 @@
 #include <nuttx/sensors/ccf_rfid_serial.h>
 #include <nuttx/input/buttons.h>
 #include <arch/board/board.h>
+#include <nuttx/sensors/qencoder.h>
 
 //mavlink
 #include "mavlink/minimal/mavlink.h"
@@ -72,6 +73,8 @@ enum
 	MAG_FINDER_BACK,
 	RFID_READER,
 	ULTRA_SONIC,
+	QENCODER_1,
+	QENCODER_2,
 	MAX_SENSOR_NUMS
 };
 
@@ -101,6 +104,8 @@ cycle(void)
 	struct ccf_rfid_data_s ccf_rfid;
 	uint8_t i;
 	btn_buttonset_t sample = 0, oldsample = 0;
+	int qencoder[4];
+
 	uint8_t buf[50];
 	/*
 	 * Mavlink Package
@@ -151,6 +156,17 @@ cycle(void)
 		exit(EXIT_FAILURE);
 	}
 
+	/* open qencoder for rotary encoder */
+	g_dev->_fd[QENCODER_1] = open("/dev/qencoder1", O_RDONLY|O_NONBLOCK);
+	if (g_dev->_fd[QENCODER_1] < 0){
+		printf("[qencoder1] open failed:%x %s\n",g_dev->_fd[QENCODER_1], strerror(ret));
+		exit(EXIT_FAILURE);
+	}
+	g_dev->_fd[QENCODER_2] = open("/dev/qencoder2", O_RDONLY|O_NONBLOCK);
+	if (g_dev->_fd[QENCODER_2] < 0){
+		printf("[qencoder2] open failed:%x %s\n",g_dev->_fd[QENCODER_2], strerror(ret));
+		exit(EXIT_FAILURE);
+	}
 
 	while(!g_dev->_should_exit){
 
@@ -170,6 +186,11 @@ cycle(void)
 			printf("[rfid] read failed: %s\n", strerror(ret));
 		}
 
+	    ret = ioctl(g_dev->_fd[QENCODER_1],QEIOC_POSITION,&qencoder[0]);
+		if(ret < 0){
+			printf("[qencoder1] read failed: %s\n", strerror(ret));
+		}		printf("qencoder1:%d\n",qencoder[0]);
+
 		ret = read(g_dev->_fd[ULTRA_SONIC],&sample,sizeof(sample));
 		if(ret < 0){
 			printf("[buttons] read failed: %s\n", strerror(ret));
@@ -178,7 +199,7 @@ cycle(void)
 		for (i = 0; i < NUM_BUTTONS; i++){
 		   if ((sample & (1 << i)) && !(oldsample & (1 << i))){
 			   ext_board.ultrasonic[i] = 0;
-			   printf("%d was pressed\n", i);
+			   printf("%d was pressed:%d\n", i,qencoder[0]);
 			}
 
 		   if (!(sample & (1 << i)) && (oldsample & (1 << i))){
@@ -189,16 +210,14 @@ cycle(void)
 
 	    oldsample = sample;
 
+
 		//fill the mavlink package
 		ext_board.mag_f = (ccfd16f._A << 8) + ccfd16f._B;//0x11111111;
 		ext_board.mag_b = (ccfd16b._A << 8) + ccfd16b._B;//0x22222222;
 
 		ext_board.rfid  = ccf_rfid.ID;//0x33333333;
 
-		ext_board.Encoder[0] = 1;
-		ext_board.Encoder[1] = 2;
-		ext_board.Encoder[2] = 3;
-		ext_board.Encoder[3] = 4;
+
 
 		//send mavlink package via serial
 		mavlink_msg_ext_board_pack(0x01, 0x02, &msgpacket,
@@ -215,7 +234,7 @@ cycle(void)
 			printf("[comm]:write error: %s\n",strerror(byte_send));
 		}
 
-		usleep(1000*1);
+		usleep(1000*100);
 	}
 
 }

@@ -207,11 +207,11 @@
 
 #define NUM_BUTTONS        5 //1个是普通按键，另外4个是超声波IO信号
 
-#define BUTTON_USER_BIT    (1 << BUTTON_USER)
-#define BUTTON_IO1_BIT     (1 << BUTTON_IO1)
-#define BUTTON_IO2_BIT     (1 << BUTTON_IO2)
-#define BUTTON_IO3_BIT     (1 << BUTTON_IO3)
-#define BUTTON_IO4_BIT     (1 << BUTTON_IO4)
+#define BUTTON_USER_BIT    (1 << BUTTON_USER)	//PA0
+#define BUTTON_IO1_BIT     (1 << BUTTON_IO1)	//PB4
+#define BUTTON_IO2_BIT     (1 << BUTTON_IO2)	//PB5
+#define BUTTON_IO3_BIT     (1 << BUTTON_IO3)	//PB6
+#define BUTTON_IO4_BIT     (1 << BUTTON_IO4)	//PB7
 
 /* Alternate function pin selections ************************************************/
 
@@ -241,9 +241,9 @@
 //#define GPIO_UART5_RX
 //#define GPIO_UART5_TX
 
-//UART6(ttyS5) Rx:PC7  Tx:PC6
-#define GPIO_USART6_RX GPIO_USART6_RX_1
-#define GPIO_USART6_TX GPIO_USART6_TX_1
+//UART6(ttyS5) Rx:PG9  Tx:PG14
+#define GPIO_USART6_RX GPIO_USART6_RX_2
+#define GPIO_USART6_TX GPIO_USART6_TX_2
 
 /* PWM
  *
@@ -278,8 +278,8 @@
 
 /* Timer Inputs/Outputs (see the README.txt file for options) */
 
-#define GPIO_TIM2_CH1IN  GPIO_TIM2_CH1IN_2
-#define GPIO_TIM2_CH2IN  GPIO_TIM2_CH2IN_1
+#define GPIO_TIM2_CH1IN  GPIO_TIM2_CH1IN_3	//PA15
+#define GPIO_TIM2_CH2IN  GPIO_TIM2_CH2IN_2	//PB3
 
 #define GPIO_TIM8_CH1IN  GPIO_TIM8_CH1IN_1
 #define GPIO_TIM8_CH2IN  GPIO_TIM8_CH2IN_1

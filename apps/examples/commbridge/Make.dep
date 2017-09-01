@@ -56,6 +56,7 @@ commbridge_main.o: commbridge_main.c \
  /home/alvin/Desktop/FC/ExpandingBoard/nuttx/include/nuttx/sensors/ccf_rfid_serial.h \
  /home/alvin/Desktop/FC/ExpandingBoard/nuttx/include/nuttx/input/buttons.h \
  /home/alvin/Desktop/FC/ExpandingBoard/nuttx/include/arch/board/board.h \
+ /home/alvin/Desktop/FC/ExpandingBoard/nuttx/include/nuttx/sensors/qencoder.h \
  mavlink/minimal/mavlink.h mavlink/minimal/version.h \
  mavlink/minimal/minimal.h mavlink/minimal/../protocol.h \
  mavlink/minimal/../mavlink_types.h mavlink/minimal/../mavlink_helpers.h \

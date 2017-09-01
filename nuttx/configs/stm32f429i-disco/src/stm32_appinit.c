@@ -428,5 +428,19 @@ int board_app_initialize(uintptr_t arg)
     }
 #endif
 
+#ifdef  CONFIG_QENCODER
+  ret = stm32_qeinitialize("/dev/qencoder1", 2);
+  if (ret < 0)
+  {
+	syslog(LOG_ERR, "ERROR: stm32_qeinitialize(1) failed: %d\n", ret);
+  }
+
+	ret = stm32_qeinitialize("/dev/qencoder2", 8);
+	if (ret < 0)
+	{
+	  syslog(LOG_ERR, "ERROR: stm32_qeinitialize(2) failed: %d\n", ret);
+	}
+#endif
+
   return OK;
 }
