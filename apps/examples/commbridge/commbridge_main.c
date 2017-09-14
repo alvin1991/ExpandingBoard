@@ -58,6 +58,7 @@
 #include <nuttx/input/buttons.h>
 #include <arch/board/board.h>
 #include <nuttx/sensors/qencoder.h>
+#include <nuttx/sensors/oricod_abs_encoder_485.h>
 
 //mavlink
 #include "mavlink/minimal/mavlink.h"
@@ -75,6 +76,7 @@ enum
 	ULTRA_SONIC,
 	QENCODER_1,
 	QENCODER_2,
+	ABS_ENCODER,
 	MAX_SENSOR_NUMS
 };
 
@@ -82,6 +84,7 @@ typedef struct CommBridge
 {
 	bool				_class_instance;
 	bool			    _should_exit;
+	int 				_old_time_stamp[MAX_SENSOR_NUMS];
 	int					_pid;
 	int					_fd[MAX_SENSOR_NUMS];
 	void (*cycle)(void);
@@ -98,18 +101,26 @@ static void
 cycle(void)
 {
 
+	/*
+	 * Sensors data value
+	 */
 	int byte_send,len,ret = -1;
 	struct ccfd16_data_s ccfd16f;
 	struct ccfd16_data_s ccfd16b;
 	struct ccf_rfid_data_s ccf_rfid;
-	uint8_t i;
+	struct oricod_abs_encoder_data_s abs_encoders;
 	btn_buttonset_t sample = 0, oldsample = 0;
+
+	uint8_t i;
+
 	int qencoder[4];
 
-	uint8_t buf[50];
+	uint8_t buf[256];
+
 	/*
 	 * Mavlink Package
 	 */
+
 	mavlink_message_t  msgpacket;
 	memset(&msgpacket,0,sizeof(msgpacket));
 
@@ -117,46 +128,65 @@ cycle(void)
 	/*
 	 * Mavlink extboard
 	 */
+
 	mavlink_ext_board_t ext_board;
 	memset(&ext_board,0,sizeof(ext_board));
 
 
-	/* open serial port for communication with rover */
+	/*
+	 * open serial port for communication with rover
+	 */
+
 	g_dev->_fd[COMM_SERIAL] = open("/dev/ttyS1",O_RDWR);
 	if (g_dev->_fd[COMM_SERIAL] < 0){
 		printf("[comm] open failed: %s\n", strerror(ret));
 		exit(EXIT_FAILURE);
 	}
 
-	/* open serial port for magfinder front */
+	/*
+	 * open serial port for magfinder front  ttyS2
+	 */
+
 	g_dev->_fd[MAG_FINDER_FRONT] = open("/dev/magf",O_RDWR);
 	if (g_dev->_fd[MAG_FINDER_FRONT] < 0){
 		printf("[magf] open failed: %s\n", strerror(ret));
 		exit(EXIT_FAILURE);
 	}
 
-	/* open serial port for magfinder back */
+	/*
+	 * open serial port for magfinder back ttyS3
+	 */
+
 	g_dev->_fd[MAG_FINDER_BACK] = open("/dev/magb", O_RDWR);
 	if (g_dev->_fd[MAG_FINDER_BACK] < 0){
 		printf("[magb] open failed: %s\n", strerror(ret));
 		exit(EXIT_FAILURE);
 	}
 
-	/* open serial port for RFID sensor */
+	/*
+	 * open serial port for RFID sensor  ttyS4
+	 */
+
 	g_dev->_fd[RFID_READER] = open("/dev/rfid",O_RDWR);
 	if (g_dev->_fd[RFID_READER] < 0){
 		printf("[rfid] open failed: %s\n", strerror(ret));
 		exit(EXIT_FAILURE);
 	}
 
-	/* open IO for ultra sonic sensor */
+	/*
+	 * open IO for ultra sonic sensor
+	 */
+
 	g_dev->_fd[ULTRA_SONIC] = open("/dev/buttons", O_RDONLY|O_NONBLOCK);
 	if (g_dev->_fd[ULTRA_SONIC] < 0){
 		printf("[buttons] open failed:%x %s\n",g_dev->_fd[ULTRA_SONIC], strerror(ret));
 		exit(EXIT_FAILURE);
 	}
 
-	/* open qencoder for rotary encoder */
+	/*
+	 * open qencoder for rotary encoder
+	 */
+
 	g_dev->_fd[QENCODER_1] = open("/dev/qencoder1", O_RDONLY|O_NONBLOCK);
 	if (g_dev->_fd[QENCODER_1] < 0){
 		printf("[qencoder1] open failed:%x %s\n",g_dev->_fd[QENCODER_1], strerror(ret));
@@ -168,28 +198,78 @@ cycle(void)
 		exit(EXIT_FAILURE);
 	}
 
+	/*
+	 * open 485bus for abs encoder
+	 */
+
+	g_dev->_fd[ABS_ENCODER] = open("/dev/oricod", O_RDWR);
+	if (g_dev->_fd[ABS_ENCODER] < 0){
+		printf("[ABS_ENCODER] open failed:%x %s\n",g_dev->_fd[ABS_ENCODER], strerror(ret));
+		exit(EXIT_FAILURE);
+	}
+
+	/*
+	 * main loop
+	 * receive data from the extend sensors.
+	 * */
+
 	while(!g_dev->_should_exit){
 
-		/* read data from sensors */
+		/*
+		 * 1.read data from magnetic sensors
+		 * port:ttyS2、ttyS3
+		 */
+
 		ret = read(g_dev->_fd[MAG_FINDER_FRONT],&ccfd16f,sizeof(struct ccfd16_data_s));
 		if(ret < 0){
 			printf("[magf] read failed: %s\n", strerror(ret));
 		}
+		//check sensor value valid?
+
 
 		ret = read(g_dev->_fd[MAG_FINDER_BACK],&ccfd16b,sizeof(struct ccfd16_data_s));
 		if(ret < 0){
 			printf("[magb] read failed: %s\n", strerror(ret));
 		}
 
+		/* 2.read data from RFID sensors
+		 * port:ttyS4
+		 */
+
 		ret = read(g_dev->_fd[RFID_READER],&ccf_rfid,sizeof(struct ccf_rfid_data_s));
 		if(ret < 0){
 			printf("[rfid] read failed: %s\n", strerror(ret));
 		}
 
+		/* 3.read data from encoder
+		 * port:Tim2、Tim8
+		 */
+
 	    ret = ioctl(g_dev->_fd[QENCODER_1],QEIOC_POSITION,&qencoder[0]);
 		if(ret < 0){
 			printf("[qencoder1] read failed: %s\n", strerror(ret));
-		}		printf("qencoder1:%d\n",qencoder[0]);
+		}
+
+	    ret = ioctl(g_dev->_fd[QENCODER_2],QEIOC_POSITION,&qencoder[1]);
+		if(ret < 0){
+			printf("[qencoder2] read failed: %s\n", strerror(ret));
+		}
+
+		/*
+		 * 4.read data from abs encoder sensors
+		 * port:ttyS5
+		 */
+		ret = read(g_dev->_fd[ABS_ENCODER],&abs_encoders,sizeof(struct oricod_abs_encoder_data_s));
+		if(ret < 0){
+			printf("[ABS_ENCODER] read failed: %s\n", strerror(ret));
+		}
+//		if(abs_encoders._state == 4 ){
+//			printf("[ABS_ENCODER:%d] val:%d time:%d\n", abs_encoders._addr,abs_encoders._value,abs_encoders._time_stamp);
+//		}
+
+		/* 5.read data from ultra sonic sensors
+		 * port:btn
+		 */
 
 		ret = read(g_dev->_fd[ULTRA_SONIC],&sample,sizeof(sample));
 		if(ret < 0){
@@ -199,27 +279,40 @@ cycle(void)
 		for (i = 0; i < NUM_BUTTONS; i++){
 		   if ((sample & (1 << i)) && !(oldsample & (1 << i))){
 			   ext_board.ultrasonic[i] = 0;
-			   printf("%d was pressed:%d\n", i,qencoder[0]);
+			   //printf("%d was pressed:%d\n", i,qencoder[0]);
 			}
 
 		   if (!(sample & (1 << i)) && (oldsample & (1 << i))){
 			   ext_board.ultrasonic[i] = 1;
-			  printf("%d was released\n", i);
+			  //printf("%d was released\n", i);
 		 	}
 		 }
 
 	    oldsample = sample;
 
 
-		//fill the mavlink package
-		ext_board.mag_f = (ccfd16f._A << 8) + ccfd16f._B;//0x11111111;
-		ext_board.mag_b = (ccfd16b._A << 8) + ccfd16b._B;//0x22222222;
+		/*
+		 *fill the mavlink package
+		 */
 
-		ext_board.rfid  = ccf_rfid.ID;//0x33333333;
+		ext_board.mag_f = (ccfd16f._A << 8) + ccfd16f._B;
+		ext_board.mag_b = (ccfd16b._A << 8) + ccfd16b._B;
+
+		ext_board.rfid  = ccf_rfid.ID;
+
+		ext_board.Encoder[0] = qencoder[0];
+		ext_board.Encoder[1] = qencoder[1];
+		if(abs_encoders._addr == 1){
+			ext_board.Encoder[2] = abs_encoders._value;
+		}else if(abs_encoders._addr == 2){
+			ext_board.Encoder[3] = abs_encoders._value;
+		}
 
 
+		/*
+		 *send mavlink package via serial
+		 */
 
-		//send mavlink package via serial
 		mavlink_msg_ext_board_pack(0x01, 0x02, &msgpacket,
 				ext_board.mag_f,\
 				ext_board.mag_b,\
@@ -233,7 +326,7 @@ cycle(void)
 		if(byte_send < 0){
 			printf("[comm]:write error: %s\n",strerror(byte_send));
 		}
-
+		printf("[comm]:write : %d\n",byte_send);
 		usleep(1000*100);
 	}
 

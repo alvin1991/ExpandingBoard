@@ -81,6 +81,10 @@
 #include <nuttx/sensors/ccf_rfid_serial.h>
 #endif
 
+#ifdef CONFIG_ORICOD_ENCODER
+#include <nuttx/sensors/oricod_abs_encoder_485.h>
+#endif
+
 #ifdef CONFIG_BUTTONS
 #  include <nuttx/input/buttons.h>
 #endif
@@ -440,6 +444,15 @@ int board_app_initialize(uintptr_t arg)
 	{
 	  syslog(LOG_ERR, "ERROR: stm32_qeinitialize(2) failed: %d\n", ret);
 	}
+#endif
+
+#ifdef CONFIG_ORICOD_ENCODER
+	ret = oricod_abs_encoder_register();
+	if (ret < 0)
+	{
+		syslog(LOG_ERR, "ERROR: oricod_abs_encoder_register() failed: %d\n", ret);
+	}
+
 #endif
 
   return OK;

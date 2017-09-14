@@ -172,6 +172,12 @@ ifeq ($(CONFIG_CCF_RFID),y)
   CSRCS += ccf_rfid_serial.c
 endif
 
+# ORICOD-ENCODER
+
+ifeq ($(CONFIG_ORICOD_ENCODER),y)
+  CSRCS += oricod_abs_encoder_485.c
+endif
+
 # Include sensor driver build support
 
 DEPPATH += --dep-path sensors

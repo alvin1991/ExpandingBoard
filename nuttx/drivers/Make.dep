@@ -681,6 +681,60 @@ pipe_common.o: pipes/pipe_common.c \
  /home/alvin/Desktop/FC/ExpandingBoard/nuttx/include/nuttx/arch.h \
  pipes/pipe_common.h \
  /home/alvin/Desktop/FC/ExpandingBoard/nuttx/include/poll.h
+qencoder.o: sensors/qencoder.c \
+ /home/alvin/Desktop/FC/ExpandingBoard/nuttx/include/nuttx/config.h \
+ /home/alvin/Desktop/FC/ExpandingBoard/nuttx/include/sys/types.h \
+ /home/alvin/Desktop/FC/ExpandingBoard/nuttx/include/nuttx/compiler.h \
+ /home/alvin/Desktop/FC/ExpandingBoard/nuttx/include/stdint.h \
+ /home/alvin/Desktop/FC/ExpandingBoard/nuttx/include/arch/types.h \
+ /home/alvin/Desktop/FC/ExpandingBoard/nuttx/include/limits.h \
+ /home/alvin/Desktop/FC/ExpandingBoard/nuttx/include/arch/limits.h \
+ /home/alvin/Desktop/FC/ExpandingBoard/nuttx/include/stdbool.h \
+ /home/alvin/Desktop/FC/ExpandingBoard/nuttx/include/stdlib.h \
+ /home/alvin/Desktop/FC/ExpandingBoard/nuttx/include/unistd.h \
+ /home/alvin/Desktop/FC/ExpandingBoard/nuttx/include/string.h \
+ /home/alvin/Desktop/FC/ExpandingBoard/nuttx/include/stddef.h \
+ /home/alvin/Desktop/FC/ExpandingBoard/nuttx/include/semaphore.h \
+ /home/alvin/Desktop/FC/ExpandingBoard/nuttx/include/fcntl.h \
+ /home/alvin/Desktop/FC/ExpandingBoard/nuttx/include/assert.h \
+ /home/alvin/Desktop/FC/ExpandingBoard/nuttx/include/errno.h \
+ /home/alvin/Desktop/FC/ExpandingBoard/nuttx/include/debug.h \
+ /home/alvin/Desktop/FC/ExpandingBoard/nuttx/include/syslog.h \
+ /opt/gcc-arm-none-eabi-4_9-2015q3/lib/gcc/arm-none-eabi/4.9.3/include/stdarg.h \
+ /home/alvin/Desktop/FC/ExpandingBoard/nuttx/include/nuttx/kmalloc.h \
+ /home/alvin/Desktop/FC/ExpandingBoard/nuttx/include/nuttx/mm/mm.h \
+ /home/alvin/Desktop/FC/ExpandingBoard/nuttx/include/nuttx/userspace.h \
+ /home/alvin/Desktop/FC/ExpandingBoard/nuttx/include/signal.h \
+ /home/alvin/Desktop/FC/ExpandingBoard/nuttx/include/time.h \
+ /home/alvin/Desktop/FC/ExpandingBoard/nuttx/include/pthread.h \
+ /home/alvin/Desktop/FC/ExpandingBoard/nuttx/include/sys/prctl.h \
+ /home/alvin/Desktop/FC/ExpandingBoard/nuttx/include/nuttx/semaphore.h \
+ /home/alvin/Desktop/FC/ExpandingBoard/nuttx/include/nuttx/clock.h \
+ /home/alvin/Desktop/FC/ExpandingBoard/nuttx/include/nuttx/fs/fs.h \
+ /home/alvin/Desktop/FC/ExpandingBoard/nuttx/include/nuttx/mqueue.h \
+ /home/alvin/Desktop/FC/ExpandingBoard/nuttx/include/mqueue.h \
+ /home/alvin/Desktop/FC/ExpandingBoard/nuttx/include/queue.h \
+ /home/alvin/Desktop/FC/ExpandingBoard/nuttx/include/queue.h \
+ /home/alvin/Desktop/FC/ExpandingBoard/nuttx/include/nuttx/arch.h \
+ /home/alvin/Desktop/FC/ExpandingBoard/nuttx/include/sched.h \
+ /home/alvin/Desktop/FC/ExpandingBoard/nuttx/include/nuttx/sched.h \
+ /home/alvin/Desktop/FC/ExpandingBoard/nuttx/include/nuttx/irq.h \
+ /home/alvin/Desktop/FC/ExpandingBoard/nuttx/include/arch/irq.h \
+ /home/alvin/Desktop/FC/ExpandingBoard/nuttx/include/arch/chip/irq.h \
+ /home/alvin/Desktop/FC/ExpandingBoard/nuttx/include/arch/stm32/chip.h \
+ /home/alvin/Desktop/FC/ExpandingBoard/nuttx/include/arch/stm32/stm32f40xxx_irq.h \
+ /home/alvin/Desktop/FC/ExpandingBoard/nuttx/include/arch/armv7-m/irq.h \
+ /home/alvin/Desktop/FC/ExpandingBoard/nuttx/include/arch/armv7-m/irq_lazyfpu.h \
+ /home/alvin/Desktop/FC/ExpandingBoard/nuttx/include/nuttx/wdog.h \
+ /home/alvin/Desktop/FC/ExpandingBoard/nuttx/include/nuttx/mm/shm.h \
+ /home/alvin/Desktop/FC/ExpandingBoard/nuttx/include/nuttx/mm/gran.h \
+ /home/alvin/Desktop/FC/ExpandingBoard/nuttx/include/nuttx/net/net.h \
+ /home/alvin/Desktop/FC/ExpandingBoard/nuttx/include/arch/arch.h \
+ /home/alvin/Desktop/FC/ExpandingBoard/nuttx/include/nuttx/pgalloc.h \
+ /home/alvin/Desktop/FC/ExpandingBoard/nuttx/include/nuttx/addrenv.h \
+ /home/alvin/Desktop/FC/ExpandingBoard/nuttx/include/nuttx/sensors/qencoder.h \
+ /home/alvin/Desktop/FC/ExpandingBoard/nuttx/include/nuttx/fs/ioctl.h \
+ /home/alvin/Desktop/FC/ExpandingBoard/nuttx/include/nuttx/serial/tioctl.h
 ccfd16_serial.o: sensors/ccfd16_serial.c \
  /home/alvin/Desktop/FC/ExpandingBoard/nuttx/include/errno.h \
  /home/alvin/Desktop/FC/ExpandingBoard/nuttx/include/nuttx/compiler.h \
@@ -792,6 +846,63 @@ ccf_rfid_serial.o: sensors/ccf_rfid_serial.c \
  /home/alvin/Desktop/FC/ExpandingBoard/nuttx/include/nuttx/arch.h \
  /home/alvin/Desktop/FC/ExpandingBoard/nuttx/include/nuttx/wqueue.h \
  /home/alvin/Desktop/FC/ExpandingBoard/nuttx/include/nuttx/sensors/ccf_rfid_serial.h \
+ /home/alvin/Desktop/FC/ExpandingBoard/nuttx/include/nuttx/sensors/ioctl.h \
+ /home/alvin/Desktop/FC/ExpandingBoard/nuttx/include/nuttx/fs/ioctl.h \
+ /home/alvin/Desktop/FC/ExpandingBoard/nuttx/include/nuttx/serial/tioctl.h
+oricod_abs_encoder_485.o: sensors/oricod_abs_encoder_485.c \
+ /home/alvin/Desktop/FC/ExpandingBoard/nuttx/include/errno.h \
+ /home/alvin/Desktop/FC/ExpandingBoard/nuttx/include/nuttx/compiler.h \
+ /home/alvin/Desktop/FC/ExpandingBoard/nuttx/include/nuttx/config.h \
+ /home/alvin/Desktop/FC/ExpandingBoard/nuttx/include/debug.h \
+ /home/alvin/Desktop/FC/ExpandingBoard/nuttx/include/syslog.h \
+ /home/alvin/Desktop/FC/ExpandingBoard/nuttx/include/stdint.h \
+ /home/alvin/Desktop/FC/ExpandingBoard/nuttx/include/arch/types.h \
+ /home/alvin/Desktop/FC/ExpandingBoard/nuttx/include/limits.h \
+ /home/alvin/Desktop/FC/ExpandingBoard/nuttx/include/arch/limits.h \
+ /opt/gcc-arm-none-eabi-4_9-2015q3/lib/gcc/arm-none-eabi/4.9.3/include/stdarg.h \
+ /home/alvin/Desktop/FC/ExpandingBoard/nuttx/include/stdbool.h \
+ /home/alvin/Desktop/FC/ExpandingBoard/nuttx/include/stdlib.h \
+ /home/alvin/Desktop/FC/ExpandingBoard/nuttx/include/sys/types.h \
+ /home/alvin/Desktop/FC/ExpandingBoard/nuttx/include/fcntl.h \
+ /home/alvin/Desktop/FC/ExpandingBoard/nuttx/include/stdio.h \
+ /home/alvin/Desktop/FC/ExpandingBoard/nuttx/include/sched.h \
+ /home/alvin/Desktop/FC/ExpandingBoard/nuttx/include/nuttx/sched.h \
+ /home/alvin/Desktop/FC/ExpandingBoard/nuttx/include/queue.h \
+ /home/alvin/Desktop/FC/ExpandingBoard/nuttx/include/signal.h \
+ /home/alvin/Desktop/FC/ExpandingBoard/nuttx/include/time.h \
+ /home/alvin/Desktop/FC/ExpandingBoard/nuttx/include/semaphore.h \
+ /home/alvin/Desktop/FC/ExpandingBoard/nuttx/include/pthread.h \
+ /home/alvin/Desktop/FC/ExpandingBoard/nuttx/include/sys/prctl.h \
+ /home/alvin/Desktop/FC/ExpandingBoard/nuttx/include/unistd.h \
+ /home/alvin/Desktop/FC/ExpandingBoard/nuttx/include/nuttx/semaphore.h \
+ /home/alvin/Desktop/FC/ExpandingBoard/nuttx/include/nuttx/clock.h \
+ /home/alvin/Desktop/FC/ExpandingBoard/nuttx/include/nuttx/fs/fs.h \
+ /home/alvin/Desktop/FC/ExpandingBoard/nuttx/include/nuttx/mqueue.h \
+ /home/alvin/Desktop/FC/ExpandingBoard/nuttx/include/mqueue.h \
+ /home/alvin/Desktop/FC/ExpandingBoard/nuttx/include/queue.h \
+ /home/alvin/Desktop/FC/ExpandingBoard/nuttx/include/nuttx/irq.h \
+ /home/alvin/Desktop/FC/ExpandingBoard/nuttx/include/assert.h \
+ /home/alvin/Desktop/FC/ExpandingBoard/nuttx/include/arch/irq.h \
+ /home/alvin/Desktop/FC/ExpandingBoard/nuttx/include/arch/chip/irq.h \
+ /home/alvin/Desktop/FC/ExpandingBoard/nuttx/include/arch/stm32/chip.h \
+ /home/alvin/Desktop/FC/ExpandingBoard/nuttx/include/arch/stm32/stm32f40xxx_irq.h \
+ /home/alvin/Desktop/FC/ExpandingBoard/nuttx/include/arch/armv7-m/irq.h \
+ /home/alvin/Desktop/FC/ExpandingBoard/nuttx/include/arch/armv7-m/irq_lazyfpu.h \
+ /home/alvin/Desktop/FC/ExpandingBoard/nuttx/include/nuttx/wdog.h \
+ /home/alvin/Desktop/FC/ExpandingBoard/nuttx/include/nuttx/mm/shm.h \
+ /home/alvin/Desktop/FC/ExpandingBoard/nuttx/include/nuttx/mm/gran.h \
+ /home/alvin/Desktop/FC/ExpandingBoard/nuttx/include/nuttx/net/net.h \
+ /home/alvin/Desktop/FC/ExpandingBoard/nuttx/include/arch/arch.h \
+ /home/alvin/Desktop/FC/ExpandingBoard/nuttx/include/nuttx/pgalloc.h \
+ /home/alvin/Desktop/FC/ExpandingBoard/nuttx/include/nuttx/addrenv.h \
+ /home/alvin/Desktop/FC/ExpandingBoard/nuttx/include/string.h \
+ /home/alvin/Desktop/FC/ExpandingBoard/nuttx/include/stddef.h \
+ /home/alvin/Desktop/FC/ExpandingBoard/nuttx/include/nuttx/kmalloc.h \
+ /home/alvin/Desktop/FC/ExpandingBoard/nuttx/include/nuttx/mm/mm.h \
+ /home/alvin/Desktop/FC/ExpandingBoard/nuttx/include/nuttx/userspace.h \
+ /home/alvin/Desktop/FC/ExpandingBoard/nuttx/include/nuttx/arch.h \
+ /home/alvin/Desktop/FC/ExpandingBoard/nuttx/include/nuttx/wqueue.h \
+ /home/alvin/Desktop/FC/ExpandingBoard/nuttx/include/nuttx/sensors/oricod_abs_encoder_485.h \
  /home/alvin/Desktop/FC/ExpandingBoard/nuttx/include/nuttx/sensors/ioctl.h \
  /home/alvin/Desktop/FC/ExpandingBoard/nuttx/include/nuttx/fs/ioctl.h \
  /home/alvin/Desktop/FC/ExpandingBoard/nuttx/include/nuttx/serial/tioctl.h
@@ -1335,6 +1446,60 @@ syslog_consolechannel.o: syslog/syslog_consolechannel.c \
  /home/alvin/Desktop/FC/ExpandingBoard/nuttx/include/nuttx/addrenv.h \
  /home/alvin/Desktop/FC/ExpandingBoard/nuttx/include/nuttx/syslog/syslog.h \
  syslog/syslog.h
+timer.o: timers/timer.c \
+ /home/alvin/Desktop/FC/ExpandingBoard/nuttx/include/nuttx/config.h \
+ /home/alvin/Desktop/FC/ExpandingBoard/nuttx/include/sys/types.h \
+ /home/alvin/Desktop/FC/ExpandingBoard/nuttx/include/nuttx/compiler.h \
+ /home/alvin/Desktop/FC/ExpandingBoard/nuttx/include/stdint.h \
+ /home/alvin/Desktop/FC/ExpandingBoard/nuttx/include/arch/types.h \
+ /home/alvin/Desktop/FC/ExpandingBoard/nuttx/include/limits.h \
+ /home/alvin/Desktop/FC/ExpandingBoard/nuttx/include/arch/limits.h \
+ /home/alvin/Desktop/FC/ExpandingBoard/nuttx/include/stdbool.h \
+ /home/alvin/Desktop/FC/ExpandingBoard/nuttx/include/string.h \
+ /home/alvin/Desktop/FC/ExpandingBoard/nuttx/include/stddef.h \
+ /home/alvin/Desktop/FC/ExpandingBoard/nuttx/include/semaphore.h \
+ /home/alvin/Desktop/FC/ExpandingBoard/nuttx/include/fcntl.h \
+ /home/alvin/Desktop/FC/ExpandingBoard/nuttx/include/signal.h \
+ /home/alvin/Desktop/FC/ExpandingBoard/nuttx/include/time.h \
+ /home/alvin/Desktop/FC/ExpandingBoard/nuttx/include/assert.h \
+ /home/alvin/Desktop/FC/ExpandingBoard/nuttx/include/errno.h \
+ /home/alvin/Desktop/FC/ExpandingBoard/nuttx/include/debug.h \
+ /home/alvin/Desktop/FC/ExpandingBoard/nuttx/include/syslog.h \
+ /opt/gcc-arm-none-eabi-4_9-2015q3/lib/gcc/arm-none-eabi/4.9.3/include/stdarg.h \
+ /home/alvin/Desktop/FC/ExpandingBoard/nuttx/include/nuttx/fs/fs.h \
+ /home/alvin/Desktop/FC/ExpandingBoard/nuttx/include/nuttx/mqueue.h \
+ /home/alvin/Desktop/FC/ExpandingBoard/nuttx/include/mqueue.h \
+ /home/alvin/Desktop/FC/ExpandingBoard/nuttx/include/queue.h \
+ /home/alvin/Desktop/FC/ExpandingBoard/nuttx/include/queue.h \
+ /home/alvin/Desktop/FC/ExpandingBoard/nuttx/include/nuttx/irq.h \
+ /home/alvin/Desktop/FC/ExpandingBoard/nuttx/include/arch/irq.h \
+ /home/alvin/Desktop/FC/ExpandingBoard/nuttx/include/arch/chip/irq.h \
+ /home/alvin/Desktop/FC/ExpandingBoard/nuttx/include/arch/stm32/chip.h \
+ /home/alvin/Desktop/FC/ExpandingBoard/nuttx/include/arch/stm32/stm32f40xxx_irq.h \
+ /home/alvin/Desktop/FC/ExpandingBoard/nuttx/include/arch/armv7-m/irq.h \
+ /home/alvin/Desktop/FC/ExpandingBoard/nuttx/include/arch/armv7-m/irq_lazyfpu.h \
+ /home/alvin/Desktop/FC/ExpandingBoard/nuttx/include/nuttx/kmalloc.h \
+ /home/alvin/Desktop/FC/ExpandingBoard/nuttx/include/stdlib.h \
+ /home/alvin/Desktop/FC/ExpandingBoard/nuttx/include/nuttx/mm/mm.h \
+ /home/alvin/Desktop/FC/ExpandingBoard/nuttx/include/nuttx/userspace.h \
+ /home/alvin/Desktop/FC/ExpandingBoard/nuttx/include/pthread.h \
+ /home/alvin/Desktop/FC/ExpandingBoard/nuttx/include/sys/prctl.h \
+ /home/alvin/Desktop/FC/ExpandingBoard/nuttx/include/unistd.h \
+ /home/alvin/Desktop/FC/ExpandingBoard/nuttx/include/nuttx/semaphore.h \
+ /home/alvin/Desktop/FC/ExpandingBoard/nuttx/include/nuttx/clock.h \
+ /home/alvin/Desktop/FC/ExpandingBoard/nuttx/include/nuttx/arch.h \
+ /home/alvin/Desktop/FC/ExpandingBoard/nuttx/include/sched.h \
+ /home/alvin/Desktop/FC/ExpandingBoard/nuttx/include/nuttx/sched.h \
+ /home/alvin/Desktop/FC/ExpandingBoard/nuttx/include/nuttx/wdog.h \
+ /home/alvin/Desktop/FC/ExpandingBoard/nuttx/include/nuttx/mm/shm.h \
+ /home/alvin/Desktop/FC/ExpandingBoard/nuttx/include/nuttx/mm/gran.h \
+ /home/alvin/Desktop/FC/ExpandingBoard/nuttx/include/nuttx/net/net.h \
+ /home/alvin/Desktop/FC/ExpandingBoard/nuttx/include/arch/arch.h \
+ /home/alvin/Desktop/FC/ExpandingBoard/nuttx/include/nuttx/pgalloc.h \
+ /home/alvin/Desktop/FC/ExpandingBoard/nuttx/include/nuttx/addrenv.h \
+ /home/alvin/Desktop/FC/ExpandingBoard/nuttx/include/nuttx/timers/timer.h \
+ /home/alvin/Desktop/FC/ExpandingBoard/nuttx/include/nuttx/fs/ioctl.h \
+ /home/alvin/Desktop/FC/ExpandingBoard/nuttx/include/nuttx/serial/tioctl.h
 hid_parser.o: usbhost/hid_parser.c \
  /home/alvin/Desktop/FC/ExpandingBoard/nuttx/include/nuttx/config.h \
  /home/alvin/Desktop/FC/ExpandingBoard/nuttx/include/assert.h \

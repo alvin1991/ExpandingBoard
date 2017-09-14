@@ -221,7 +221,7 @@
  * brought out to PA2 (TX) and PA3 (RX) for connection to an external serial device.
  * (See the README.txt file for other options)
  */
-//UART1(ttyS0) Rx:PA10  Tx:PA9 	-->console
+//UART1(ttyS0) Rx:PA10  Tx:PA9 		-->console
 #define GPIO_USART1_RX GPIO_USART1_RX_1
 #define GPIO_USART1_TX GPIO_USART1_TX_1
 
@@ -241,7 +241,7 @@
 //#define GPIO_UART5_RX
 //#define GPIO_UART5_TX
 
-//UART6(ttyS5) Rx:PG9  Tx:PG14
+//UART6(ttyS5) Rx:PG9  Tx:PG14		-->485 encoder
 #define GPIO_USART6_RX GPIO_USART6_RX_2
 #define GPIO_USART6_TX GPIO_USART6_TX_2
 
@@ -278,11 +278,11 @@
 
 /* Timer Inputs/Outputs (see the README.txt file for options) */
 
-#define GPIO_TIM2_CH1IN  GPIO_TIM2_CH1IN_3	//PA15
+#define GPIO_TIM2_CH1IN  GPIO_TIM2_CH1IN_3	//PA5
 #define GPIO_TIM2_CH2IN  GPIO_TIM2_CH2IN_2	//PB3
 
-#define GPIO_TIM8_CH1IN  GPIO_TIM8_CH1IN_1
-#define GPIO_TIM8_CH2IN  GPIO_TIM8_CH2IN_1
+#define GPIO_TIM8_CH1IN  GPIO_TIM8_CH1IN_1	//PC6
+#define GPIO_TIM8_CH2IN  GPIO_TIM8_CH2IN_1	//PC7
 
 #ifdef CONFIG_STM32_LTDC
 # ifdef CONFIG_STM32F429I_DISCO_ILI9341_FBIFACE

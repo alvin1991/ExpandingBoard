@@ -15,6 +15,12 @@ config CCF_RFID
 	---help---
 		Enable driver support for the CCF RFID encoder.
 
+config ORICOD_ENCODER
+	bool "oricod-Encoder support"
+	default n
+	---help---
+		Enable driver support for the oricod encoder.
+
 config AS5048B
 	bool "AMS AS5048B Magnetic Rotary Encoder support"
 	default n
