@@ -8,16 +8,17 @@ typedef struct MAVLINK_PACKED __mavlink_ext_board_t
  int32_t mag_b; /*< mag finder back*/
  int32_t rfid; /*< RFID*/
  float ultrasonic[12]; /*< ultrasonic*/
- int32_t Encoder[4]; /*< ultrasonic*/
+ int32_t Encoder[4]; /*< Encoder*/
+ int32_t status; /*< status*/
 } mavlink_ext_board_t;
 
-#define MAVLINK_MSG_ID_EXT_BOARD_LEN 76
-#define MAVLINK_MSG_ID_EXT_BOARD_MIN_LEN 76
-#define MAVLINK_MSG_ID_227_LEN 76
-#define MAVLINK_MSG_ID_227_MIN_LEN 76
+#define MAVLINK_MSG_ID_EXT_BOARD_LEN 80
+#define MAVLINK_MSG_ID_EXT_BOARD_MIN_LEN 80
+#define MAVLINK_MSG_ID_227_LEN 80
+#define MAVLINK_MSG_ID_227_MIN_LEN 80
 
-#define MAVLINK_MSG_ID_EXT_BOARD_CRC 251
-#define MAVLINK_MSG_ID_227_CRC 251
+#define MAVLINK_MSG_ID_EXT_BOARD_CRC 110
+#define MAVLINK_MSG_ID_227_CRC 110
 
 #define MAVLINK_MSG_EXT_BOARD_FIELD_ULTRASONIC_LEN 12
 #define MAVLINK_MSG_EXT_BOARD_FIELD_ENCODER_LEN 4
@@ -26,23 +27,25 @@ typedef struct MAVLINK_PACKED __mavlink_ext_board_t
 #define MAVLINK_MESSAGE_INFO_EXT_BOARD { \
 	227, \
 	"EXT_BOARD", \
-	5, \
+	6, \
 	{  { "mag_f", NULL, MAVLINK_TYPE_INT32_T, 0, 0, offsetof(mavlink_ext_board_t, mag_f) }, \
          { "mag_b", NULL, MAVLINK_TYPE_INT32_T, 0, 4, offsetof(mavlink_ext_board_t, mag_b) }, \
          { "rfid", NULL, MAVLINK_TYPE_INT32_T, 0, 8, offsetof(mavlink_ext_board_t, rfid) }, \
          { "ultrasonic", NULL, MAVLINK_TYPE_FLOAT, 12, 12, offsetof(mavlink_ext_board_t, ultrasonic) }, \
          { "Encoder", NULL, MAVLINK_TYPE_INT32_T, 4, 60, offsetof(mavlink_ext_board_t, Encoder) }, \
+         { "status", NULL, MAVLINK_TYPE_INT32_T, 0, 76, offsetof(mavlink_ext_board_t, status) }, \
          } \
 }
 #else
 #define MAVLINK_MESSAGE_INFO_EXT_BOARD { \
 	"EXT_BOARD", \
-	5, \
+	6, \
 	{  { "mag_f", NULL, MAVLINK_TYPE_INT32_T, 0, 0, offsetof(mavlink_ext_board_t, mag_f) }, \
          { "mag_b", NULL, MAVLINK_TYPE_INT32_T, 0, 4, offsetof(mavlink_ext_board_t, mag_b) }, \
          { "rfid", NULL, MAVLINK_TYPE_INT32_T, 0, 8, offsetof(mavlink_ext_board_t, rfid) }, \
          { "ultrasonic", NULL, MAVLINK_TYPE_FLOAT, 12, 12, offsetof(mavlink_ext_board_t, ultrasonic) }, \
          { "Encoder", NULL, MAVLINK_TYPE_INT32_T, 4, 60, offsetof(mavlink_ext_board_t, Encoder) }, \
+         { "status", NULL, MAVLINK_TYPE_INT32_T, 0, 76, offsetof(mavlink_ext_board_t, status) }, \
          } \
 }
 #endif
@@ -57,17 +60,19 @@ typedef struct MAVLINK_PACKED __mavlink_ext_board_t
  * @param mag_b mag finder back
  * @param rfid RFID
  * @param ultrasonic ultrasonic
- * @param Encoder ultrasonic
+ * @param Encoder Encoder
+ * @param status status
  * @return length of the message in bytes (excluding serial stream start sign)
  */
 static inline uint16_t mavlink_msg_ext_board_pack(uint8_t system_id, uint8_t component_id, mavlink_message_t* msg,
-						       int32_t mag_f, int32_t mag_b, int32_t rfid, const float *ultrasonic, const int32_t *Encoder)
+						       int32_t mag_f, int32_t mag_b, int32_t rfid, const float *ultrasonic, const int32_t *Encoder, int32_t status)
 {
 #if MAVLINK_NEED_BYTE_SWAP || !MAVLINK_ALIGNED_FIELDS
 	char buf[MAVLINK_MSG_ID_EXT_BOARD_LEN];
 	_mav_put_int32_t(buf, 0, mag_f);
 	_mav_put_int32_t(buf, 4, mag_b);
 	_mav_put_int32_t(buf, 8, rfid);
+	_mav_put_int32_t(buf, 76, status);
 	_mav_put_float_array(buf, 12, ultrasonic, 12);
 	_mav_put_int32_t_array(buf, 60, Encoder, 4);
         memcpy(_MAV_PAYLOAD_NON_CONST(msg), buf, MAVLINK_MSG_ID_EXT_BOARD_LEN);
@@ -76,6 +81,7 @@ static inline uint16_t mavlink_msg_ext_board_pack(uint8_t system_id, uint8_t com
 	packet.mag_f = mag_f;
 	packet.mag_b = mag_b;
 	packet.rfid = rfid;
+	packet.status = status;
 	mav_array_memcpy(packet.ultrasonic, ultrasonic, sizeof(float)*12);
 	mav_array_memcpy(packet.Encoder, Encoder, sizeof(int32_t)*4);
         memcpy(_MAV_PAYLOAD_NON_CONST(msg), &packet, MAVLINK_MSG_ID_EXT_BOARD_LEN);
@@ -95,18 +101,20 @@ static inline uint16_t mavlink_msg_ext_board_pack(uint8_t system_id, uint8_t com
  * @param mag_b mag finder back
  * @param rfid RFID
  * @param ultrasonic ultrasonic
- * @param Encoder ultrasonic
+ * @param Encoder Encoder
+ * @param status status
  * @return length of the message in bytes (excluding serial stream start sign)
  */
 static inline uint16_t mavlink_msg_ext_board_pack_chan(uint8_t system_id, uint8_t component_id, uint8_t chan,
 							   mavlink_message_t* msg,
-						           int32_t mag_f,int32_t mag_b,int32_t rfid,const float *ultrasonic,const int32_t *Encoder)
+						           int32_t mag_f,int32_t mag_b,int32_t rfid,const float *ultrasonic,const int32_t *Encoder,int32_t status)
 {
 #if MAVLINK_NEED_BYTE_SWAP || !MAVLINK_ALIGNED_FIELDS
 	char buf[MAVLINK_MSG_ID_EXT_BOARD_LEN];
 	_mav_put_int32_t(buf, 0, mag_f);
 	_mav_put_int32_t(buf, 4, mag_b);
 	_mav_put_int32_t(buf, 8, rfid);
+	_mav_put_int32_t(buf, 76, status);
 	_mav_put_float_array(buf, 12, ultrasonic, 12);
 	_mav_put_int32_t_array(buf, 60, Encoder, 4);
         memcpy(_MAV_PAYLOAD_NON_CONST(msg), buf, MAVLINK_MSG_ID_EXT_BOARD_LEN);
@@ -115,6 +123,7 @@ static inline uint16_t mavlink_msg_ext_board_pack_chan(uint8_t system_id, uint8_
 	packet.mag_f = mag_f;
 	packet.mag_b = mag_b;
 	packet.rfid = rfid;
+	packet.status = status;
 	mav_array_memcpy(packet.ultrasonic, ultrasonic, sizeof(float)*12);
 	mav_array_memcpy(packet.Encoder, Encoder, sizeof(int32_t)*4);
         memcpy(_MAV_PAYLOAD_NON_CONST(msg), &packet, MAVLINK_MSG_ID_EXT_BOARD_LEN);
@@ -134,7 +143,7 @@ static inline uint16_t mavlink_msg_ext_board_pack_chan(uint8_t system_id, uint8_
  */
 static inline uint16_t mavlink_msg_ext_board_encode(uint8_t system_id, uint8_t component_id, mavlink_message_t* msg, const mavlink_ext_board_t* ext_board)
 {
-	return mavlink_msg_ext_board_pack(system_id, component_id, msg, ext_board->mag_f, ext_board->mag_b, ext_board->rfid, ext_board->ultrasonic, ext_board->Encoder);
+	return mavlink_msg_ext_board_pack(system_id, component_id, msg, ext_board->mag_f, ext_board->mag_b, ext_board->rfid, ext_board->ultrasonic, ext_board->Encoder, ext_board->status);
 }
 
 /**
@@ -148,7 +157,7 @@ static inline uint16_t mavlink_msg_ext_board_encode(uint8_t system_id, uint8_t c
  */
 static inline uint16_t mavlink_msg_ext_board_encode_chan(uint8_t system_id, uint8_t component_id, uint8_t chan, mavlink_message_t* msg, const mavlink_ext_board_t* ext_board)
 {
-	return mavlink_msg_ext_board_pack_chan(system_id, component_id, chan, msg, ext_board->mag_f, ext_board->mag_b, ext_board->rfid, ext_board->ultrasonic, ext_board->Encoder);
+	return mavlink_msg_ext_board_pack_chan(system_id, component_id, chan, msg, ext_board->mag_f, ext_board->mag_b, ext_board->rfid, ext_board->ultrasonic, ext_board->Encoder, ext_board->status);
 }
 
 /**
@@ -159,17 +168,19 @@ static inline uint16_t mavlink_msg_ext_board_encode_chan(uint8_t system_id, uint
  * @param mag_b mag finder back
  * @param rfid RFID
  * @param ultrasonic ultrasonic
- * @param Encoder ultrasonic
+ * @param Encoder Encoder
+ * @param status status
  */
 #ifdef MAVLINK_USE_CONVENIENCE_FUNCTIONS
 
-static inline void mavlink_msg_ext_board_send(mavlink_channel_t chan, int32_t mag_f, int32_t mag_b, int32_t rfid, const float *ultrasonic, const int32_t *Encoder)
+static inline void mavlink_msg_ext_board_send(mavlink_channel_t chan, int32_t mag_f, int32_t mag_b, int32_t rfid, const float *ultrasonic, const int32_t *Encoder, int32_t status)
 {
 #if MAVLINK_NEED_BYTE_SWAP || !MAVLINK_ALIGNED_FIELDS
 	char buf[MAVLINK_MSG_ID_EXT_BOARD_LEN];
 	_mav_put_int32_t(buf, 0, mag_f);
 	_mav_put_int32_t(buf, 4, mag_b);
 	_mav_put_int32_t(buf, 8, rfid);
+	_mav_put_int32_t(buf, 76, status);
 	_mav_put_float_array(buf, 12, ultrasonic, 12);
 	_mav_put_int32_t_array(buf, 60, Encoder, 4);
     _mav_finalize_message_chan_send(chan, MAVLINK_MSG_ID_EXT_BOARD, buf, MAVLINK_MSG_ID_EXT_BOARD_MIN_LEN, MAVLINK_MSG_ID_EXT_BOARD_LEN, MAVLINK_MSG_ID_EXT_BOARD_CRC);
@@ -178,6 +189,7 @@ static inline void mavlink_msg_ext_board_send(mavlink_channel_t chan, int32_t ma
 	packet.mag_f = mag_f;
 	packet.mag_b = mag_b;
 	packet.rfid = rfid;
+	packet.status = status;
 	mav_array_memcpy(packet.ultrasonic, ultrasonic, sizeof(float)*12);
 	mav_array_memcpy(packet.Encoder, Encoder, sizeof(int32_t)*4);
     _mav_finalize_message_chan_send(chan, MAVLINK_MSG_ID_EXT_BOARD, (const char *)&packet, MAVLINK_MSG_ID_EXT_BOARD_MIN_LEN, MAVLINK_MSG_ID_EXT_BOARD_LEN, MAVLINK_MSG_ID_EXT_BOARD_CRC);
@@ -192,7 +204,7 @@ static inline void mavlink_msg_ext_board_send(mavlink_channel_t chan, int32_t ma
 static inline void mavlink_msg_ext_board_send_struct(mavlink_channel_t chan, const mavlink_ext_board_t* ext_board)
 {
 #if MAVLINK_NEED_BYTE_SWAP || !MAVLINK_ALIGNED_FIELDS
-    mavlink_msg_ext_board_send(chan, ext_board->mag_f, ext_board->mag_b, ext_board->rfid, ext_board->ultrasonic, ext_board->Encoder);
+    mavlink_msg_ext_board_send(chan, ext_board->mag_f, ext_board->mag_b, ext_board->rfid, ext_board->ultrasonic, ext_board->Encoder, ext_board->status);
 #else
     _mav_finalize_message_chan_send(chan, MAVLINK_MSG_ID_EXT_BOARD, (const char *)ext_board, MAVLINK_MSG_ID_EXT_BOARD_MIN_LEN, MAVLINK_MSG_ID_EXT_BOARD_LEN, MAVLINK_MSG_ID_EXT_BOARD_CRC);
 #endif
@@ -206,13 +218,14 @@ static inline void mavlink_msg_ext_board_send_struct(mavlink_channel_t chan, con
   is usually the receive buffer for the channel, and allows a reply to an
   incoming message with minimum stack space usage.
  */
-static inline void mavlink_msg_ext_board_send_buf(mavlink_message_t *msgbuf, mavlink_channel_t chan,  int32_t mag_f, int32_t mag_b, int32_t rfid, const float *ultrasonic, const int32_t *Encoder)
+static inline void mavlink_msg_ext_board_send_buf(mavlink_message_t *msgbuf, mavlink_channel_t chan,  int32_t mag_f, int32_t mag_b, int32_t rfid, const float *ultrasonic, const int32_t *Encoder, int32_t status)
 {
 #if MAVLINK_NEED_BYTE_SWAP || !MAVLINK_ALIGNED_FIELDS
 	char *buf = (char *)msgbuf;
 	_mav_put_int32_t(buf, 0, mag_f);
 	_mav_put_int32_t(buf, 4, mag_b);
 	_mav_put_int32_t(buf, 8, rfid);
+	_mav_put_int32_t(buf, 76, status);
 	_mav_put_float_array(buf, 12, ultrasonic, 12);
 	_mav_put_int32_t_array(buf, 60, Encoder, 4);
     _mav_finalize_message_chan_send(chan, MAVLINK_MSG_ID_EXT_BOARD, buf, MAVLINK_MSG_ID_EXT_BOARD_MIN_LEN, MAVLINK_MSG_ID_EXT_BOARD_LEN, MAVLINK_MSG_ID_EXT_BOARD_CRC);
@@ -221,6 +234,7 @@ static inline void mavlink_msg_ext_board_send_buf(mavlink_message_t *msgbuf, mav
 	packet->mag_f = mag_f;
 	packet->mag_b = mag_b;
 	packet->rfid = rfid;
+	packet->status = status;
 	mav_array_memcpy(packet->ultrasonic, ultrasonic, sizeof(float)*12);
 	mav_array_memcpy(packet->Encoder, Encoder, sizeof(int32_t)*4);
     _mav_finalize_message_chan_send(chan, MAVLINK_MSG_ID_EXT_BOARD, (const char *)packet, MAVLINK_MSG_ID_EXT_BOARD_MIN_LEN, MAVLINK_MSG_ID_EXT_BOARD_LEN, MAVLINK_MSG_ID_EXT_BOARD_CRC);
@@ -276,11 +290,21 @@ static inline uint16_t mavlink_msg_ext_board_get_ultrasonic(const mavlink_messag
 /**
  * @brief Get field Encoder from ext_board message
  *
- * @return ultrasonic
+ * @return Encoder
  */
 static inline uint16_t mavlink_msg_ext_board_get_Encoder(const mavlink_message_t* msg, int32_t *Encoder)
 {
 	return _MAV_RETURN_int32_t_array(msg, Encoder, 4,  60);
+}
+
+/**
+ * @brief Get field status from ext_board message
+ *
+ * @return status
+ */
+static inline int32_t mavlink_msg_ext_board_get_status(const mavlink_message_t* msg)
+{
+	return _MAV_RETURN_int32_t(msg,  76);
 }
 
 /**
@@ -297,6 +321,7 @@ static inline void mavlink_msg_ext_board_decode(const mavlink_message_t* msg, ma
 	ext_board->rfid = mavlink_msg_ext_board_get_rfid(msg);
 	mavlink_msg_ext_board_get_ultrasonic(msg, ext_board->ultrasonic);
 	mavlink_msg_ext_board_get_Encoder(msg, ext_board->Encoder);
+	ext_board->status = mavlink_msg_ext_board_get_status(msg);
 #else
         uint8_t len = msg->len < MAVLINK_MSG_ID_EXT_BOARD_LEN? msg->len : MAVLINK_MSG_ID_EXT_BOARD_LEN;
         memset(ext_board, 0, MAVLINK_MSG_ID_EXT_BOARD_LEN);

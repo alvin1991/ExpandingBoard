@@ -63,6 +63,8 @@
 //mavlink
 #include "mavlink/minimal/mavlink.h"
 
+#define SET_SENSOR_STATUS_BITS(val,bit)  (val |=1 << bit)
+#define CLEAR_SENSOR_STATUS_BITS(val,bit)  (val &= (~(1 << bit)))
 
 /****************************************************************************
  * Public Parameters
@@ -84,7 +86,6 @@ typedef struct CommBridge
 {
 	bool				_class_instance;
 	bool			    _should_exit;
-	int 				_old_time_stamp[MAX_SENSOR_NUMS];
 	int					_pid;
 	int					_fd[MAX_SENSOR_NUMS];
 	void (*cycle)(void);
@@ -110,6 +111,7 @@ cycle(void)
 	struct ccf_rfid_data_s ccf_rfid;
 	struct oricod_abs_encoder_data_s abs_encoders;
 	btn_buttonset_t sample = 0, oldsample = 0;
+	struct timespec sys_timer;
 
 	uint8_t i;
 
@@ -216,6 +218,12 @@ cycle(void)
 	while(!g_dev->_should_exit){
 
 		/*
+		 * 0.get system clock
+		 */
+
+		clock_gettime(CLOCK_MONOTONIC, &sys_timer);
+
+		/*
 		 * 1.read data from magnetic sensors
 		 * port:ttyS2、ttyS3
 		 */
@@ -225,11 +233,23 @@ cycle(void)
 			printf("[magf] read failed: %s\n", strerror(ret));
 		}
 		//check sensor value valid?
-
+		struct timespec sensor_stamp = ccfd16f._time_stamp;
+		if(sys_timer.tv_sec - sensor_stamp.tv_sec>1){
+			SET_SENSOR_STATUS_BITS(ext_board.status,MAG_FINDER_FRONT);
+		}else{
+			CLEAR_SENSOR_STATUS_BITS(ext_board.status,MAG_FINDER_FRONT);
+		}
 
 		ret = read(g_dev->_fd[MAG_FINDER_BACK],&ccfd16b,sizeof(struct ccfd16_data_s));
 		if(ret < 0){
 			printf("[magb] read failed: %s\n", strerror(ret));
+		}
+		//check sensor value valid?
+		sensor_stamp = ccfd16b._time_stamp;
+		if(sys_timer.tv_sec - sensor_stamp.tv_sec>1){
+			SET_SENSOR_STATUS_BITS(ext_board.status,MAG_FINDER_BACK);
+		}else{
+			CLEAR_SENSOR_STATUS_BITS(ext_board.status,MAG_FINDER_BACK);
 		}
 
 		/* 2.read data from RFID sensors
@@ -240,6 +260,13 @@ cycle(void)
 		if(ret < 0){
 			printf("[rfid] read failed: %s\n", strerror(ret));
 		}
+		//check sensor value valid?
+		sensor_stamp = ccf_rfid._time_stamp;
+		if(sys_timer.tv_sec - sensor_stamp.tv_sec>1){
+			SET_SENSOR_STATUS_BITS(ext_board.status,RFID_READER);
+		}else{
+			CLEAR_SENSOR_STATUS_BITS(ext_board.status,RFID_READER);
+		}
 
 		/* 3.read data from encoder
 		 * port:Tim2、Tim8
@@ -248,12 +275,20 @@ cycle(void)
 	    ret = ioctl(g_dev->_fd[QENCODER_1],QEIOC_POSITION,&qencoder[0]);
 		if(ret < 0){
 			printf("[qencoder1] read failed: %s\n", strerror(ret));
+			SET_SENSOR_STATUS_BITS(ext_board.status,QENCODER_1);
+		}else{
+			CLEAR_SENSOR_STATUS_BITS(ext_board.status,QENCODER_1);
 		}
 
 	    ret = ioctl(g_dev->_fd[QENCODER_2],QEIOC_POSITION,&qencoder[1]);
 		if(ret < 0){
 			printf("[qencoder2] read failed: %s\n", strerror(ret));
+			SET_SENSOR_STATUS_BITS(ext_board.status,QENCODER_2);
+		}else{
+			CLEAR_SENSOR_STATUS_BITS(ext_board.status,QENCODER_2);
 		}
+
+
 
 		/*
 		 * 4.read data from abs encoder sensors
@@ -263,6 +298,14 @@ cycle(void)
 		if(ret < 0){
 			printf("[ABS_ENCODER] read failed: %s\n", strerror(ret));
 		}
+		//check sensor value valid?
+		sensor_stamp = abs_encoders._time_stamp;
+		if(sys_timer.tv_sec - sensor_stamp.tv_sec>1){
+			SET_SENSOR_STATUS_BITS(ext_board.status,ABS_ENCODER);
+		}else{
+			CLEAR_SENSOR_STATUS_BITS(ext_board.status,ABS_ENCODER);
+		}
+
 //		if(abs_encoders._state == 4 ){
 //			printf("[ABS_ENCODER:%d] val:%d time:%d\n", abs_encoders._addr,abs_encoders._value,abs_encoders._time_stamp);
 //		}
@@ -287,8 +330,8 @@ cycle(void)
 			  //printf("%d was released\n", i);
 		 	}
 		 }
-
 	    oldsample = sample;
+		//check sensor value valid?
 
 
 		/*
@@ -303,9 +346,9 @@ cycle(void)
 		ext_board.Encoder[0] = qencoder[0];
 		ext_board.Encoder[1] = qencoder[1];
 		if(abs_encoders._addr == 1){
-			ext_board.Encoder[2] = abs_encoders._value;
-		}else if(abs_encoders._addr == 2){
 			ext_board.Encoder[3] = abs_encoders._value;
+		}else if(abs_encoders._addr == 2){
+			ext_board.Encoder[2] = abs_encoders._value;
 		}
 
 
@@ -318,7 +361,8 @@ cycle(void)
 				ext_board.mag_b,\
 				ext_board.rfid ,\
 				ext_board.ultrasonic,\
-				ext_board.Encoder);
+				ext_board.Encoder,
+				ext_board.status);
 
 		len = mavlink_msg_to_send_buffer(buf, &msgpacket);
 
