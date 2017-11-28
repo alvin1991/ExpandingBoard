@@ -229,7 +229,7 @@
 #define GPIO_USART2_RX GPIO_USART2_RX_2
 #define GPIO_USART2_TX GPIO_USART2_TX_2
 
-//UART3(ttyS2) Rx:PB11 Tx:PB10		-->magfinder front
+//UART3(ttyS2) Rx:PB11(D9  3) Tx:PB10(D8   3)		-->magfinder front
 #define GPIO_USART3_RX GPIO_USART3_RX_1
 #define GPIO_USART3_TX GPIO_USART3_TX_1
 

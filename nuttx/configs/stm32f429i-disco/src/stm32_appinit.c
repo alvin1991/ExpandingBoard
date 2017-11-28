@@ -455,5 +455,19 @@ int board_app_initialize(uintptr_t arg)
 
 #endif
 
+	struct adc_dev_s *adc1;
+	 uint8_t channel[1] = {2};
+	 stm32_configgpio(GPIO_ADC1_IN2);
+	  if ((adc1 = stm32_adcinitialize(1, channel, 1)) == NULL)
+	  {
+		  syslog(LOG_ERR,"ERROR: Failed to get adc interface\n");
+	  }else{
+		  if ((ret = adc_register("/dev/adc1", adc1)) < 0)
+		  {
+			  syslog(LOG_ERR,"ERROR: adc_register failed: %d\n", ret);
+		  }
+	  }
+
+
   return OK;
 }

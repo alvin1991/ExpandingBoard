@@ -60,6 +60,8 @@
 #include <nuttx/sensors/qencoder.h>
 #include <nuttx/sensors/oricod_abs_encoder_485.h>
 
+#include <nuttx/analog/adc.h>
+#include <nuttx/analog/ioctl.h>
 //mavlink
 #include "mavlink/minimal/mavlink.h"
 
@@ -79,6 +81,7 @@ enum
 	QENCODER_1,
 	QENCODER_2,
 	ABS_ENCODER,
+	ADC1,
 	MAX_SENSOR_NUMS
 };
 
@@ -211,6 +214,15 @@ cycle(void)
 	}
 
 	/*
+	 * open ADC1_1 for abs encoder
+	 */
+
+	g_dev->_fd[ADC1] = open("/dev/adc1", O_RDONLY);
+	if (g_dev->_fd[ADC1] < 0){
+		printf("[ADC1] open failed:%x %d\n",g_dev->_fd[ADC1], ret);
+		exit(EXIT_FAILURE);
+	}
+	/*
 	 * main loop
 	 * receive data from the extend sensors.
 	 * */
@@ -233,24 +245,24 @@ cycle(void)
 			printf("[magf] read failed: %s\n", strerror(ret));
 		}
 		//check sensor value valid?
-		struct timespec sensor_stamp = ccfd16f._time_stamp;
-		if(sys_timer.tv_sec - sensor_stamp.tv_sec>1){
-			SET_SENSOR_STATUS_BITS(ext_board.status,MAG_FINDER_FRONT);
-		}else{
-			CLEAR_SENSOR_STATUS_BITS(ext_board.status,MAG_FINDER_FRONT);
-		}
+//		struct timespec sensor_stamp = ccfd16f._time_stamp;
+//		if(sys_timer.tv_sec - sensor_stamp.tv_sec>1){
+//			SET_SENSOR_STATUS_BITS(ext_board.status,MAG_FINDER_FRONT);
+//		}else{
+//			CLEAR_SENSOR_STATUS_BITS(ext_board.status,MAG_FINDER_FRONT);
+//		}
 
 		ret = read(g_dev->_fd[MAG_FINDER_BACK],&ccfd16b,sizeof(struct ccfd16_data_s));
 		if(ret < 0){
 			printf("[magb] read failed: %s\n", strerror(ret));
 		}
 		//check sensor value valid?
-		sensor_stamp = ccfd16b._time_stamp;
-		if(sys_timer.tv_sec - sensor_stamp.tv_sec>1){
-			SET_SENSOR_STATUS_BITS(ext_board.status,MAG_FINDER_BACK);
-		}else{
-			CLEAR_SENSOR_STATUS_BITS(ext_board.status,MAG_FINDER_BACK);
-		}
+//		sensor_stamp = ccfd16b._time_stamp;
+//		if(sys_timer.tv_sec - sensor_stamp.tv_sec>1){
+//			SET_SENSOR_STATUS_BITS(ext_board.status,MAG_FINDER_BACK);
+//		}else{
+//			CLEAR_SENSOR_STATUS_BITS(ext_board.status,MAG_FINDER_BACK);
+//		}
 
 		/* 2.read data from RFID sensors
 		 * port:ttyS4
@@ -261,12 +273,12 @@ cycle(void)
 			printf("[rfid] read failed: %s\n", strerror(ret));
 		}
 		//check sensor value valid?
-		sensor_stamp = ccf_rfid._time_stamp;
-		if(sys_timer.tv_sec - sensor_stamp.tv_sec>1){
-			SET_SENSOR_STATUS_BITS(ext_board.status,RFID_READER);
-		}else{
-			CLEAR_SENSOR_STATUS_BITS(ext_board.status,RFID_READER);
-		}
+//		sensor_stamp = ccf_rfid._time_stamp;
+//		if(sys_timer.tv_sec - sensor_stamp.tv_sec>1){
+//			SET_SENSOR_STATUS_BITS(ext_board.status,RFID_READER);
+//		}else{
+//			CLEAR_SENSOR_STATUS_BITS(ext_board.status,RFID_READER);
+//		}
 
 		/* 3.read data from encoder
 		 * port:Tim2、Tim8
@@ -299,12 +311,12 @@ cycle(void)
 			printf("[ABS_ENCODER] read failed: %s\n", strerror(ret));
 		}
 		//check sensor value valid?
-		sensor_stamp = abs_encoders._time_stamp;
-		if(sys_timer.tv_sec - sensor_stamp.tv_sec>1){
-			SET_SENSOR_STATUS_BITS(ext_board.status,ABS_ENCODER);
-		}else{
-			CLEAR_SENSOR_STATUS_BITS(ext_board.status,ABS_ENCODER);
-		}
+//		sensor_stamp = abs_encoders._time_stamp;
+//		if(sys_timer.tv_sec - sensor_stamp.tv_sec>1){
+//			SET_SENSOR_STATUS_BITS(ext_board.status,ABS_ENCODER);
+//		}else{
+//			CLEAR_SENSOR_STATUS_BITS(ext_board.status,ABS_ENCODER);
+//		}
 
 //		if(abs_encoders._state == 4 ){
 //			printf("[ABS_ENCODER:%d] val:%d time:%d\n", abs_encoders._addr,abs_encoders._value,abs_encoders._time_stamp);
@@ -333,6 +345,52 @@ cycle(void)
 	    oldsample = sample;
 		//check sensor value valid?
 
+	    fflush(stdout);
+
+	    ret = ioctl(g_dev->_fd[ADC1], ANIOC_TRIGGER, 0);
+	    if (ret < 0)
+	    {
+	        int errcode = errno;
+	        printf("adc_main: ANIOC_TRIGGER ioctl failed: %d\n", errcode);
+	    }
+
+	    struct adc_msg_s adc_msg[1];
+
+		ret = read(g_dev->_fd[ADC1],adc_msg,sizeof(struct adc_msg_s));
+	    if (ret < 0)
+	      {
+	        printf("adc_main: Interrupted read...\n");
+	      }
+	    else if (ret == 0)
+	      {
+	        printf("adc_main: No data read, Ignoring\n");
+	      }
+	    else
+	    {
+	    	int nsamples = ret / sizeof(struct adc_msg_s);
+
+			if (nsamples * sizeof(struct adc_msg_s) != ret)
+			  {
+				printf("adc_main: read size=%ld is not a multiple of sample size=%d, Ignoring\n",
+					   (long)ret, sizeof(struct adc_msg_s));
+			  }
+			else
+			  {
+				printf("Sample:");
+				for (i = 0; i < nsamples; i++)
+				  {
+					printf("%d: channel: %d value: %d\n",
+						   i+1, adc_msg[i].am_channel, adc_msg[i].am_data);
+				  }
+			  }
+
+	    }
+
+
+
+
+
+
 
 		/*
 		 *fill the mavlink package
@@ -346,9 +404,9 @@ cycle(void)
 		ext_board.Encoder[0] = qencoder[0];
 		ext_board.Encoder[1] = qencoder[1];
 		if(abs_encoders._addr == 1){
-			ext_board.Encoder[3] = abs_encoders._value;
-		}else if(abs_encoders._addr == 2){
 			ext_board.Encoder[2] = abs_encoders._value;
+		}else if(abs_encoders._addr == 2){
+			ext_board.Encoder[3] = abs_encoders._value;
 		}
 
 
@@ -370,8 +428,8 @@ cycle(void)
 		if(byte_send < 0){
 			printf("[comm]:write error: %s\n",strerror(byte_send));
 		}
-		printf("[comm]:write : %d\n",byte_send);
-		usleep(1000*100);
+		//printf("[comm]:write : %d\n",byte_send);
+		usleep(1000*10);
 	}
 
 }

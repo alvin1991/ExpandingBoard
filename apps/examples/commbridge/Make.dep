@@ -58,6 +58,9 @@ commbridge_main.o: commbridge_main.c \
  /home/alvin/Desktop/FC/ExpandingBoard/nuttx/include/arch/board/board.h \
  /home/alvin/Desktop/FC/ExpandingBoard/nuttx/include/nuttx/sensors/qencoder.h \
  /home/alvin/Desktop/FC/ExpandingBoard/nuttx/include/nuttx/sensors/oricod_abs_encoder_485.h \
+ /home/alvin/Desktop/FC/ExpandingBoard/nuttx/include/nuttx/analog/adc.h \
+ /home/alvin/Desktop/FC/ExpandingBoard/nuttx/include/nuttx/spi/spi.h \
+ /home/alvin/Desktop/FC/ExpandingBoard/nuttx/include/nuttx/analog/ioctl.h \
  mavlink/minimal/mavlink.h mavlink/minimal/version.h \
  mavlink/minimal/minimal.h mavlink/minimal/../protocol.h \
  mavlink/minimal/../mavlink_types.h mavlink/minimal/../mavlink_helpers.h \
